@@ -22,7 +22,7 @@ meta.fetch
 meta.extract
 ```
 
-## Supported Database types
+## Supported Databases
 - Oracle
 
 ### Suported Oracle object types
