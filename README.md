@@ -25,7 +25,7 @@ meta.extract
 ## Supported Databases
 - Oracle
 
-### Suported Oracle object types
+### Supported Oracle object types
 - Table
 - more to come...
 
