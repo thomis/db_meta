@@ -5,6 +5,11 @@ describe DbMeta do
     expect(DbMeta::VERSION).not_to be nil
   end
 
+  it 'validates allowed database types' do
+    expect(DbMeta::DATABASE_TYPES.size).to eq(1)
+    expect(DbMeta::DATABASE_TYPES[0]).to eq(:oracle)
+  end
+
   it 'expects a username' do
     meta = DbMeta::DbMeta.new
     expect{ meta.fetch }.to raise_error(RuntimeError, 'username is mandatory, pass a username argument during initialization')

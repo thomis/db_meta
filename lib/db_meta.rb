@@ -1,12 +1,15 @@
-require "db_meta/version"
+require_relative 'db_meta/version'
+require_relative 'db_meta/abstract'
 
 module DbMeta
 
+  DATABASE_TYPES = [:oracle]
+
   class DbMeta
 
-    DATABASE_TYPES = [:oracle]
-
     def initialize(**args)
+      @args = args
+
       @username = args[:username]
       @password = args[:password]
       @instance = args[:instance]
