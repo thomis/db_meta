@@ -9,7 +9,7 @@ module DbMeta
     end
 
     def self.from_type(type, args)
-      raise "type [#{type}] is unknown" unless TYPES.keys.include?(type)
+      raise "Abstract type [#{type}] is unknown" unless TYPES.keys.include?(type)
       TYPES[type].new(args)
     end
 
@@ -17,6 +17,8 @@ module DbMeta
       @username = args[:username]
       @password = args[:password]
       @instance = args[:instance]
+
+      @objects = []
 
       raise 'username is mandatory, pass a username argument during initialization' if @username.nil?
       raise 'password is mandatory, pass a password argument during initialization' if @password.nil?

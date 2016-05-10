@@ -1,5 +1,13 @@
 require 'spec_helper'
 
+
+meta_args = {
+  username: 'a_username',
+  password: 'a_password',
+  instance: 'an_instance'
+}
+
+
 describe DbMeta do
   it 'has a version number' do
     expect(DbMeta::VERSION).not_to be nil
@@ -24,6 +32,38 @@ describe DbMeta do
 
   it 'expects a valid database type' do
     expect { DbMeta::DbMeta.new(username: 'a_username', password: 'a_password', instance: 'an_instance', database_type: :unknown) }.to raise_error(RuntimeError, 'allowed database types are [oracle], but provided was [unknown]')
+  end
+
+  it 'creates an valid instance' do
+    expect {
+      DbMeta::DbMeta.new(meta_args)
+    }.not_to raise_error
+  end
+
+  it 'fails with unknown abstract type' do
+
+    expect {
+      DbMeta::Abstract.from_type(:unkown, meta_args)
+    }.to raise_error(RuntimeError, 'Abstract type [unkown] is unknown')
+
+  end
+
+  it 'fails with missing instance methods' do
+
+    class Example < DbMeta::Abstract
+      register_type(:example)
+    end
+
+    meta = DbMeta::Abstract.from_type(:example, meta_args)
+
+    expect {
+      meta.fetch
+    }.to raise_error(RuntimeError, 'Needs to be implemented in derived class')
+
+    expect {
+      meta.extract
+    }.to raise_error(RuntimeError, 'Needs to be implemented in derived class')
+
   end
 
 end

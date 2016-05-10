@@ -2,6 +2,8 @@ require_relative 'db_meta/version'
 require_relative 'db_meta/abstract'
 
 require_relative 'db_meta/oracle/oracle'
+require_relative 'db_meta/oracle/base'
+require_relative 'db_meta/oracle/types/table'
 
 module DbMeta
 
@@ -16,11 +18,11 @@ module DbMeta
     end
 
     def fetch(**args)
-      abstract.fetch(args)
+      @abstract.fetch(args)
     end
 
     def extract(**args)
-      abstract.extract(args)
+      @abstract.extract(args)
     end
 
   end
