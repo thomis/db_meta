@@ -1,5 +1,5 @@
 # Welcome to db_meta
-Database meta and core data extraction
+Database meta and core data extraction.
 
 ## Installation
 via Gemfile
@@ -13,7 +13,14 @@ gem install db_meta
 ```
 
 ## Example
+```
+require 'rubygems'
+require 'db_meta'
 
+meta = DbMeta::DbMeta.new(username: 'a_username', password: 'a_password', instance: 'an_instance')
+meta.fetch
+meta.extract
+```
 
 ## Supported Database types
 - Oracle
