@@ -1,9 +1,17 @@
 require_relative 'db_meta/version'
+require_relative 'db_meta/constant'
+require_relative 'db_meta/logger'
+
 require_relative 'db_meta/abstract'
 
 require_relative 'db_meta/oracle/oracle'
 require_relative 'db_meta/oracle/base'
 require_relative 'db_meta/oracle/types/table'
+require_relative 'db_meta/oracle/types/package'
+require_relative 'db_meta/oracle/types/trigger'
+require_relative 'db_meta/oracle/types/type'
+
+Log = Logger.new(STDOUT)
 
 module DbMeta
 
@@ -11,17 +19,19 @@ module DbMeta
 
   class DbMeta
 
-    def initialize(**args)
+    def initialize(args={})
       @database_type = args[:database_type] || DATABASE_TYPES[0]
       raise "allowed database types are [#{DATABASE_TYPES.join(', ')}], but provided was [#{@database_type}]" unless DATABASE_TYPES.include?(@database_type)
       @abstract = Abstract.from_type(@database_type, args)
     end
 
-    def fetch(**args)
+    def fetch(args={})
+      Log.info("Fetching...")
       @abstract.fetch(args)
     end
 
-    def extract(**args)
+    def extract(args={})
+      Log.info("Extracting...")
       @abstract.extract(args)
     end
 

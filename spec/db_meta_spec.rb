@@ -66,4 +66,12 @@ describe DbMeta do
 
   end
 
+  it 'failes to extract with unknown format' do
+    meta = DbMeta::Abstract.from_type(:oracle, meta_args)
+    expect {
+      meta.extract(format: :unknown)
+    }.to raise_error(RuntimeError, 'Format [unknown] is not supported')
+
+  end
+
 end
