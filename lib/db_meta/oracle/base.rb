@@ -11,16 +11,29 @@ module DbMeta
       end
 
       def self.from_type(type, args={})
-        raise "Oracle type [#{type}] is unknown" unless TYPES.keys.include?(type)
-        TYPES[type].new(args)
+        return TYPES[type].new(args) if TYPES.keys.include?(type)
+
+        # There is no implementation for this type yet. Let's just use Base
+        Log.warn("Don't know how to handle oracle type [#{type}] yet")
+        Base.new(args)
       end
 
       def initialize(args={})
         @type = args[:type]
 
-        @name = args['OBJECT_NAME'].downcase if args['OBJECT_NAME']
+        @name = args['OBJECT_NAME'] if args['OBJECT_NAME']
         @status = :unknown
         @status = args['STATUS'].downcase.to_sym if args['STATUS']
+
+        fetch
+      end
+
+
+      def fetch
+      end
+
+      def extract(args={})
+        'needs to be implemented'
       end
 
     end

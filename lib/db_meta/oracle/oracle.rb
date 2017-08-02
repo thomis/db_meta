@@ -1,14 +1,40 @@
 require 'oci8'
 
+require_relative 'connection'
+require_relative 'base'
+require_relative 'types/table'
+require_relative 'types/package'
+require_relative 'types/package_body'
+require_relative 'types/trigger'
+require_relative 'types/type'
+require_relative 'types/column'
+require_relative 'types/function'
+require_relative 'types/index'
+require_relative 'types/synonym'
+require_relative 'types/procedure'
+require_relative 'types/sequence'
+require_relative 'types/lob'
+require_relative 'types/materialized_view'
+require_relative 'types/view'
+
+require_relative 'types/column'
+
 module DbMeta
   module Oracle
     class Oracle < DbMeta::Abstract
       register_type(:oracle)
 
-      def fetch(args={})
-        connect
 
-        cursor = @connection.exec('select * from user_objects order by object_type, object_name')
+      def initialize(args={})
+        super(args)
+
+        Connection.instance.set(@username, @password, @instance)
+      end
+
+      def fetch(args={})
+
+
+        cursor = Connection.instance.get.exec('select * from user_objects order by object_type, object_name')
         cursor.fetch_hash do |row|
           type = row['OBJECT_TYPE'].downcase.to_sym
           @types << type
@@ -32,13 +58,12 @@ module DbMeta
         # validate args
         raise "Format [#{format}] is not supported" unless EXTRACT_FORMATS.include?(format)
 
-        connect
         make_folders
         summary
 
         # extract every object
         @objects.each do |object|
-          file_name = File.join(@base_folder, "#{"%02d" % type_sequence(object.type)}_#{object.type.to_s}", "#{object.name}.#{format.to_s}")
+          file_name = File.join(@base_folder, "#{"%02d" % type_sequence(object.type)}_#{object.type.to_s}", "#{object.name.downcase}.#{format.to_s}")
           File.open(file_name, 'w') do |output|
             output.write(object.extract(args))
           end
@@ -46,18 +71,6 @@ module DbMeta
       end
 
       private
-
-      def connect
-        return if @connection
-        @connection = ::OCI8.new(@username, @password, @instance)
-        Log.info("Connected to #{@username}@#{@instance}")
-      end
-
-      def disconnect
-        return unless @connection
-        @onnection.logoff
-        Log.info("Logged off from #{@username}@#{@instance}")
-      end
 
       def make_folders
         folders = [@base_folder]

@@ -3,13 +3,7 @@ require_relative 'db_meta/constant'
 require_relative 'db_meta/logger'
 
 require_relative 'db_meta/abstract'
-
 require_relative 'db_meta/oracle/oracle'
-require_relative 'db_meta/oracle/base'
-require_relative 'db_meta/oracle/types/table'
-require_relative 'db_meta/oracle/types/package'
-require_relative 'db_meta/oracle/types/trigger'
-require_relative 'db_meta/oracle/types/type'
 
 Log = Logger.new(STDOUT)
 
