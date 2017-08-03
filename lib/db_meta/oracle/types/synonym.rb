@@ -3,9 +3,33 @@ module DbMeta
     class Synonym < Base
       register_type('SYNONYM')
 
+      attr_reader :table_owner, :table_name, :db_link
+
+      def fetch(args={})
+        connection = Connection.instance.get
+        cursor = connection.exec("select table_owner, table_name, db_link from user_synonyms where synonym_name = '#{@name}'")
+        while row = cursor.fetch()
+          @table_owner = row[0].to_s
+          @table_name = row[1].to_s
+          @db_link = row[2].to_s
+        end
+        cursor.close
+      ensure
+        connection.logoff
+      end
 
       def extract(args={})
+        line = ""
+        line << "CREATE OR REPALCE SYNONYM #{@name} FOR "
+        line << "#{@table_owner}." if @table_owner.size > 0
+        line << "#{@table_name}"
+        line << "@#{@db_link}" if @db_link.size > 0
+        line << ";"
 
+        buffer = []
+        buffer << line
+        buffer << nil
+        buffer.join("\n")
       end
 
     end

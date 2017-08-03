@@ -17,7 +17,8 @@ module DbMeta
 
       def self.all(args={})
         columns = []
-        cursor = Connection.instance.get.exec("select column_name, data_type, data_length, data_precision, data_scale, nullable, data_default from user_tab_columns where table_name = '#{args[:object_name]}' order by column_id")
+        connection = Connection.instance.get
+        cursor = connection.exec("select column_name, data_type, data_length, data_precision, data_scale, nullable, data_default from user_tab_columns where table_name = '#{args[:object_name]}' order by column_id")
         while row = cursor.fetch()
           column = Column.new(row)
           column.name = row[0].to_s
@@ -29,7 +30,7 @@ module DbMeta
           column.data_default = row[6].to_s
 
           # column comments
-          cursor2 = Connection.instance.get.exec("select comments from user_col_comments where table_name = '#{args[:object_name]}' and column_name = '#{column.name}'")
+          cursor2 = connection.exec("select comments from user_col_comments where table_name = '#{args[:object_name]}' and column_name = '#{column.name}'")
           while row2 = cursor2.fetch()
             column.comment = row2[0].to_s
           end
@@ -40,6 +41,8 @@ module DbMeta
         cursor.close
 
         columns
+      rescue
+        connection.loggoff
       end
 
       private

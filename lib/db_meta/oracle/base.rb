@@ -27,8 +27,6 @@ module DbMeta
 
         @status = :unknown
         @status = args['STATUS'].downcase.to_sym if args['STATUS']
-
-        fetch
       end
 
 

@@ -11,7 +11,7 @@ module DbMeta
 
 
       def fetch
-        fetch_comments
+        @comment = Comment.find(type: 'TABLE', name: @name)
         @columns = Column.all(object_name: @name)
       end
 
@@ -31,7 +31,7 @@ module DbMeta
 
         # table comments
         if @comment
-          buffer << "COMMENT ON TABLE #{@name} IS '#{@comment.gsub("'","''")}';"
+          buffer << "COMMENT ON TABLE #{@name} IS '#{@comment.text("'","''")}';"
         end
 
         # table column comments
@@ -41,17 +41,6 @@ module DbMeta
         end
 
         buffer.join("\n")
-      end
-
-      private
-
-      def fetch_comments
-        return unless @name
-        cursor = Connection.instance.get.exec("select comments from user_tab_comments where table_type = 'TABLE' and table_name = '#{@name}'")
-        while row = cursor.fetch()
-          @comment = row[0]
-        end
-        cursor.close
       end
 
     end

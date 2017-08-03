@@ -3,16 +3,25 @@ module DbMeta
     class View < Base
       register_type('VIEW')
 
+      def initialize(args={})
+        super(args)
+
+        @comment = nil # view level comment
+      end
+
       def fetch(args={})
+        @comment = Comment.find(type: 'TABLE', name: @name)
         @columns = Column.all(object_name: @name)
 
         @source = ""
+        connection = Connection.instance.get
         cursor = Connection.instance.get.exec("select text from user_views where view_name = '#{@name}'")
         while row = cursor.fetch()
           @source << row[0].to_s
         end
         cursor.close
-
+      ensure
+        connection.logoff
       end
 
 
@@ -31,6 +40,18 @@ module DbMeta
         buffer << @source.strip
         buffer << ';'
         buffer << nil
+
+        # view comments
+        if @comment
+          buffer << "COMMENT ON VIEW #{@name} IS '#{@comment.text("'","''")}';"
+        end
+
+        # view column comments
+        @columns.each do |column|
+          next if column.comment.size == 0
+          buffer << "COMMENT ON COLUMN #{@name}.#{column.name} IS '#{column.comment.gsub("'","''")}';"
+        end
+
         buffer.join("\n")
       end
 

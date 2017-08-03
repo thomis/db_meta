@@ -15,8 +15,10 @@ require_relative 'types/sequence'
 require_relative 'types/lob'
 require_relative 'types/materialized_view'
 require_relative 'types/view'
+require_relative 'types/database_link'
 
 require_relative 'types/column'
+require_relative 'types/comment'
 
 module DbMeta
   module Oracle
@@ -26,24 +28,41 @@ module DbMeta
 
       def initialize(args={})
         super(args)
-
-        Connection.instance.set(@username, @password, @instance)
+        Connection.instance.set(@username, @password, @instance, @worker)
       end
 
       def fetch(args={})
         items = get_all_items_sorted(args)
 
-        # fetch details
+        # instantize objects
         items.each do |item|
           object = Base.from_type(item)
-
-          Log.info(" - #{object.type} - #{object.name}")
-
           @types << object.type
           @invalid_objects[object.type] << object if object.status == :invalid
           @objects << object
         end
         @types.uniq!
+
+        # fetch details in parallel
+        worker_queue = Queue.new
+        @objects.map{ |object| worker_queue.push(object) }
+
+        # start as many threads as max physical connections
+        worker = (1..Connection.instance.worker).map do
+          Thread.new do
+            begin
+              while object = worker_queue.pop(true)
+                Log.info(" - #{object.type} - #{object.name}")
+                object.fetch
+              end
+            rescue ThreadError
+            end
+          end
+        end
+        worker.map(&:join)
+
+      ensure
+        Connection.instance.disconnect
       end
 
       def extract(args={})
@@ -89,7 +108,8 @@ module DbMeta
         # get all objects with name, type, status
         items = []
         types = []
-        cursor = Connection.instance.get.exec('select * from user_objects order by object_type, object_name')
+        connection = Connection.instance.get
+        cursor = connection.exec('select * from user_objects order by object_type, object_name')
         cursor.fetch_hash do |item|
           next if item['OBJECT_TYPE'] == 'PACKAGE BODY'
           items << item
@@ -103,6 +123,8 @@ module DbMeta
         Log.info("Objects: #{items.size}, Object Types: #{types.uniq.size}")
 
         items
+      ensure
+        connection.logoff # closes logical connection
       end
 
       def summary

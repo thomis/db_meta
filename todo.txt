@@ -3,6 +3,14 @@
 -- -----------------------------------------------------------------------------
 
 - iot tables
+- index
+- constraint
+- lob
+- materialized view
+- type
+- grants
+
+- merge types (exp. table, index, constraints; synonyms)
 
 -- -------------------------------------
 -- DONE
@@ -13,4 +21,6 @@
 - procedure
 - package
 - view
-
+- synonym
+- database link
+- index

@@ -14,11 +14,14 @@ module DbMeta
         cursor.close
 
         @body = ""
-        cursor = Connection.instance.get.exec("select text from user_source where type = 'PACKAGE BODY' and name = '#{@name}' order by line")
+        connection = Connection.instance.get
+        cursor = connection.exec("select text from user_source where type = 'PACKAGE BODY' and name = '#{@name}' order by line")
         while row = cursor.fetch()
           @body << row[0].to_s
         end
         cursor.close
+      ensure
+          connection.logoff
       end
 
       def extract(args={})

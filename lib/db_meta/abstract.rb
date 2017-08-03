@@ -17,6 +17,7 @@ module DbMeta
       @username = args[:username]
       @password = args[:password]
       @instance = args[:instance]
+      @worker = args[:worker] || 10
 
       @objects = []
       @invalid_objects = Hash.new([])

@@ -6,7 +6,8 @@ module DbMeta
       attr_reader :min_value, :max_value, :increment_by, :cycle_flag, :order_flag, :cache_size, :last_number
 
       def fetch
-        cursor = Connection.instance.get.exec("select to_char(min_value), to_char(max_value), to_char(increment_by), cycle_flag, order_flag, to_char(cache_size), to_char(last_number) from user_sequences where sequence_name = '#{@name}'")
+        connection = Connection.instance.get
+        cursor = connection.exec("select to_char(min_value), to_char(max_value), to_char(increment_by), cycle_flag, order_flag, to_char(cache_size), to_char(last_number) from user_sequences where sequence_name = '#{@name}'")
         while row = cursor.fetch()
           @min_value = row[0].to_i
           @max_value = row[1].to_i
@@ -17,6 +18,8 @@ module DbMeta
           @last_number = row[6].to_i
         end
         cursor.close
+      ensure
+        connection.logoff
       end
 
       def extract(args={})

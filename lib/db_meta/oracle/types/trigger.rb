@@ -10,7 +10,8 @@ module DbMeta
       end
 
       def fetch
-        cursor = Connection.instance.get.exec("select trigger_type, triggering_event, table_name, referencing_names, description, trigger_body from user_triggers where trigger_name = '#{@name}'")
+        connection = Connection.instance.get
+        cursor = connection.exec("select trigger_type, triggering_event, table_name, referencing_names, description, trigger_body from user_triggers where trigger_name = '#{@name}'")
         while row = cursor.fetch()
           @trigger_type = row[0].to_s
           @triggering_event = row[1].to_s
@@ -23,6 +24,8 @@ module DbMeta
         parse_trigger_type
 
         cursor.close
+      ensure
+        connection.logoff
       end
 
       def extract(args={})
