@@ -1,7 +1,7 @@
 module DbMeta
   module Oracle
     class MaterializedView < Base
-      register_type(:"materialized view")
+      register_type('MATERIALIZED VIEW')
 
 
       def extract(args={})

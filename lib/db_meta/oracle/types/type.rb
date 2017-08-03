@@ -1,7 +1,7 @@
 module DbMeta
   module Oracle
     class Type < Base
-      register_type(:type)
+      register_type('TYPE')
 
 
       def extract(args={})

@@ -4,9 +4,13 @@
 
 - iot tables
 
-
-
 -- -------------------------------------
 -- DONE
 -- -------------------------------------
 - trigger
+- sequence
+- function
+- procedure
+- package
+- view
+

@@ -10,7 +10,10 @@ module DbMeta
         TYPES[type] = self
       end
 
-      def self.from_type(type, args={})
+      def self.from_type(args={})
+        type = args['OBJECT_TYPE']
+
+        # return instance of known type
         return TYPES[type].new(args) if TYPES.keys.include?(type)
 
         # There is no implementation for this type yet. Let's just use Base
@@ -19,9 +22,9 @@ module DbMeta
       end
 
       def initialize(args={})
-        @type = args[:type]
+        @type = args['OBJECT_TYPE']
+        @name = args['OBJECT_NAME']
 
-        @name = args['OBJECT_NAME'] if args['OBJECT_NAME']
         @status = :unknown
         @status = args['STATUS'].downcase.to_sym if args['STATUS']
 

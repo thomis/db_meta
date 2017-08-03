@@ -4,7 +4,6 @@ require_relative 'connection'
 require_relative 'base'
 require_relative 'types/table'
 require_relative 'types/package'
-require_relative 'types/package_body'
 require_relative 'types/trigger'
 require_relative 'types/type'
 require_relative 'types/column'
@@ -32,24 +31,19 @@ module DbMeta
       end
 
       def fetch(args={})
+        items = get_all_items_sorted(args)
 
-
-        cursor = Connection.instance.get.exec('select * from user_objects order by object_type, object_name')
-        cursor.fetch_hash do |row|
-          type = row['OBJECT_TYPE'].downcase.to_sym
-          @types << type
-          object = Base.from_type(type, row.merge(type: type))
+        # fetch details
+        items.each do |item|
+          object = Base.from_type(item)
 
           Log.info(" - #{object.type} - #{object.name}")
 
-          @invalid_objects[type] << object if object.status == :invalid
+          @types << object.type
+          @invalid_objects[object.type] << object if object.status == :invalid
           @objects << object
         end
-        cursor.close
         @types.uniq!
-
-
-        Log.info("Objects: #{@objects.size}, Object Types: #{@types.size}")
       end
 
       def extract(args={})
@@ -68,6 +62,9 @@ module DbMeta
             output.write(object.extract(args))
           end
         end
+
+        extract_create_all(args)
+        extract_drop_all(args)
       end
 
       private
@@ -88,6 +85,26 @@ module DbMeta
 
       end
 
+      def get_all_items_sorted(args)
+        # get all objects with name, type, status
+        items = []
+        types = []
+        cursor = Connection.instance.get.exec('select * from user_objects order by object_type, object_name')
+        cursor.fetch_hash do |item|
+          next if item['OBJECT_TYPE'] == 'PACKAGE BODY'
+          items << item
+          types << item['OBJECT_TYPE']
+        end
+        cursor.close
+
+        # sort items
+        items = items.sort_by{ |i| [ type_sequence(i['OBJECT_TYPE']), i['OBJECT_NAME']]}
+
+        Log.info("Objects: #{items.size}, Object Types: #{types.uniq.size}")
+
+        items
+      end
+
       def summary
         Log.info("Summarizing...")
         types = Hash.new(0)
@@ -104,7 +121,7 @@ module DbMeta
         buffer << "#{SUMMARY_COLUMN_FORMAT_NAME % 'Total Objects'}#{"%5s" % @objects.size.to_s}"
         buffer << nil
         types.each_pair do |type, count|
-          buffer << "#{SUMMARY_COLUMN_FORMAT_NAME % type.to_s}#{"%5d" % count}"
+          buffer << "#{SUMMARY_COLUMN_FORMAT_NAME % type.upcase.to_s}#{"%5d" % count}"
         end
         buffer << nil
         buffer << nil
@@ -115,21 +132,66 @@ module DbMeta
         else
           buffer << 'Invalid Objects'
           @invalid_objects.each_pair do |type, objects|
-            buffer << "#{SUMMARY_COLUMN_FORMAT_NAME % type.to_s}#{"%5d" % objects.size}"
+            buffer << "#{SUMMARY_COLUMN_FORMAT_NAME % type.upcase.to_s}#{"%5d" % objects.size}"
             objects.each do |object|
               buffer << "#{SUMMARY_COLUMN_FORMAT_NAME_RIGHT % object.name}"
             end
             buffer << nil
           end
         end
+        buffer << nil
 
-        File.open(File.join(@base_folder, "#{"%02d" % type_sequence(:summary)}_summary.txt"), 'w') do |output|
+        File.open(File.join(@base_folder, "#{"%02d" % type_sequence('SUMMARY')}_summary.txt"), 'w') do |output|
           output.write(buffer.join("\n"))
         end
       end
 
       def type_sequence(type)
         return TYPE_SEQUENCE[type] || 99
+      end
+
+      def extract_create_all(args={})
+        Log.info("Extracting create all script...")
+
+        buffer = []
+        buffer << '-- ' + ('-' * 80)
+        buffer << "-- #{@username} - CREATE ALL"
+        buffer << '-- ' + ('-' * 80)
+
+        current_type = nil
+        @objects.each do |object|
+          buffer << nil if current_type != object.type
+          folder = "#{'%02d' % type_sequence(object.type)}_#{object.type.downcase}"
+          file = "#{object.name.downcase}.sql"
+          buffer << "@#{File.join(folder,file)}"
+          current_type = object.type
+        end
+
+        File.open(File.join(@base_folder,"#{'%02d' % type_sequence('CREATE')}_create_all.sql"), 'w') do |output|
+          output.write(buffer.join("\n"))
+        end
+      end
+
+      def extract_drop_all(args={})
+        Log.info("Extracting drop all script...")
+
+        buffer = []
+        buffer << '-- ' + ('-' * 80)
+        buffer << "-- #{@username} - DROP ALL"
+        buffer << '-- ' + ('-' * 80)
+        buffer << nil
+
+        current_type = nil
+        @objects.reverse_each do |object|
+          buffer << nil if current_type != object.type
+          buffer << "DROP #{object.type} #{object.name};"
+          current_type = object.type
+        end
+        buffer << nil
+
+        File.open(File.join(@base_folder,"#{'%02d' % type_sequence('DROP')}_drop_all.sql"), 'w') do |output|
+          output.write(buffer.join("\n"))
+        end
       end
 
     end

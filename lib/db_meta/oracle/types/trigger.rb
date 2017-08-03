@@ -1,7 +1,7 @@
 module DbMeta
   module Oracle
     class Trigger < Base
-      register_type(:trigger)
+      register_type('TRIGGER')
 
       attr_accessor :trigger_type, :trigger_event, :for_each, :table_name, :referencing_names, :description, :tigger_body
 

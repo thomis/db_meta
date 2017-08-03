@@ -4,28 +4,28 @@ module DbMeta
   SUMMARY_COLUMN_FORMAT_NAME_RIGHT = "%40s"
 
   TYPE_SEQUENCE = {
-    summary: 0,
-    create: 1,
-    drop: 1,
+    'SUMMARY' => 0,
+    'CREATE' => 1,
+    'DROP' => 1,
 
-    database_link: 2,
-    sequence: 3,
-    table: 4,
-    view: 5,
-    materialized_view: 6,
-    function: 7,
-    procedure: 8,
-    package: 9,
-    package_body: 9,
-    synonym: 10,
-    trigger: 11,
-    grant: 12,
-    grant_external: 13,
-    type: 14,
-    lob: 20,
-    index: 22,
-    data: 40,
-    constraint: 60
+    'DATABASE LINK' => 2,
+    'SEQUENCE' => 3,
+    'TABLE' => 4,
+    'VIEW' => 5,
+    'MATERIALIZED VIEW' => 6,
+    'FUNCTION' => 7,
+    'PROCEDURE' => 8,
+    'PACKAGE' => 9,
+    'PACKAGE BODY' => 9,
+    'SYNONYM' => 10,
+    'TRIGGER' => 11,
+    'GRANT' => 12,
+    'GRANT EXTERNAL' => 13,
+    'TYPE' => 14,
+    'LOB' => 20,
+    'INDEX' => 22,
+    'DATA' => 40,
+    'CONSTRAINT' => 60
   }
 
   EXTRACT_FORMATS = [:sql]

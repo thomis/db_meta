@@ -1,7 +1,7 @@
 module DbMeta
   module Oracle
     class Lob < Base
-      register_type(:lob)
+      register_type('LOB')
 
 
       def extract(args={})

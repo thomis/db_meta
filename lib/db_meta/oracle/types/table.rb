@@ -1,7 +1,7 @@
 module DbMeta
   module Oracle
     class Table < Base
-      register_type(:table)
+      register_type('TABLE')
 
       def initialize(args={})
         super(args)
