@@ -7,6 +7,8 @@ module DbMeta
 
       def initialize(args={})
         super(args)
+
+        @report_type = :embedded
       end
 
       def fetch

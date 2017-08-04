@@ -8,6 +8,7 @@ module DbMeta
       def initialize(args={})
         super(args)
 
+        @extract_type = :embedded
         @columns = []
       end
 

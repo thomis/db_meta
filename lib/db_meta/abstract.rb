@@ -21,7 +21,6 @@ module DbMeta
 
       @objects = []
       @invalid_objects = Hash.new([])
-      @types = []
 
       @base_folder = args[:base_folder] || File.expand_path(File.join(Dir.pwd,"/#{@username}@#{@instance}"))
 
@@ -36,16 +35,6 @@ module DbMeta
 
     def extract(args={})
       raise 'Needs to be implemented in derived class'
-    end
-
-    private
-
-    def connect
-      raise 'Needs to be imlemented in derived class'
-    end
-
-    def disconnect
-      raise 'Needs to be imlemented in derviced class'
     end
 
   end

@@ -2,7 +2,6 @@ require 'spec_helper'
 
 describe DbMeta::Oracle do
 
-
   it 'has a table type' do
     object = DbMeta::Oracle::Base.from_type(:table)
     expect(object.class).to eq(DbMeta::Oracle::Table)

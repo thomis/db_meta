@@ -1,9 +1,11 @@
 require 'oci8'
+require 'fileutils'
 
 require_relative 'connection'
 require_relative 'base'
 require_relative 'types/table'
 require_relative 'types/package'
+require_relative 'types/package_body'
 require_relative 'types/trigger'
 require_relative 'types/type'
 require_relative 'types/column'
@@ -16,6 +18,8 @@ require_relative 'types/lob'
 require_relative 'types/materialized_view'
 require_relative 'types/view'
 require_relative 'types/database_link'
+require_relative 'types/constraint'
+require_relative 'types/grant'
 
 require_relative 'types/column'
 require_relative 'types/comment'
@@ -28,26 +32,25 @@ module DbMeta
 
       def initialize(args={})
         super(args)
+
         Connection.instance.set(@username, @password, @instance, @worker)
       end
 
       def fetch(args={})
         items = get_all_items_sorted(args)
 
-        # instantize objects
+        # make array of object instances
         items.each do |item|
           object = Base.from_type(item)
-          @types << object.type
-          @invalid_objects[object.type] << object if object.status == :invalid
+          @invalid_objects[object.type] << object if [:invalid, :disabled].include?(object.status)
           @objects << object
         end
-        @types.uniq!
 
         # fetch details in parallel
         worker_queue = Queue.new
         @objects.map{ |object| worker_queue.push(object) }
 
-        # start as many threads as max physical connections
+        # start as many worker threads as max physical connections
         worker = (1..Connection.instance.worker).map do
           Thread.new do
             begin
@@ -59,7 +62,7 @@ module DbMeta
             end
           end
         end
-        worker.map(&:join)
+        worker.map(&:join) # wait until all are done
 
       ensure
         Connection.instance.disconnect
@@ -71,27 +74,41 @@ module DbMeta
         # validate args
         raise "Format [#{format}] is not supported" unless EXTRACT_FORMATS.include?(format)
 
+        preprocess_objects
+        clean_folders
         make_folders
-        summary
-
-        # extract every object
-        @objects.each do |object|
-          file_name = File.join(@base_folder, "#{"%02d" % type_sequence(object.type)}_#{object.type.to_s}", "#{object.name.downcase}.#{format.to_s}")
-          File.open(file_name, 'w') do |output|
-            output.write(object.extract(args))
-          end
-        end
-
+        extract_summary
         extract_create_all(args)
         extract_drop_all(args)
+
+        # extract every object
+        @objects_to_extract.each do |object|
+          filename = File.join(@base_folder, "#{"%02d" % type_sequence(object.type)}_#{object.type.to_s}", "#{object.name.downcase}.#{format.to_s}")
+          write_buffer_to_file(object.extract(args), filename)
+        end
+
       end
 
       private
 
+      def preprocess_objects
+        @objects_to_extract = []
+        @objects.each do |object|
+          next if object.extract_type == :embedded
+          @objects_to_extract << object
+        end
+      end
+
+      def clean_folders
+        FileUtils.rm_rf(@base_folder)
+      end
+
       def make_folders
         folders = [@base_folder]
 
-        @types.each do |type|
+        # create folders for object types to extract
+        types = @objects_to_extract.map{ |o| o.type }.uniq
+        types.each do |type|
           folders << File.join(@base_folder,"#{"%02d" % type_sequence(type)}_#{type.to_s}")
         end
 
@@ -109,9 +126,8 @@ module DbMeta
         items = []
         types = []
         connection = Connection.instance.get
-        cursor = connection.exec('select * from user_objects order by object_type, object_name')
+        cursor = connection.exec(OBJECT_QUERY)
         cursor.fetch_hash do |item|
-          next if item['OBJECT_TYPE'] == 'PACKAGE BODY'
           items << item
           types << item['OBJECT_TYPE']
         end
@@ -127,7 +143,7 @@ module DbMeta
         connection.logoff # closes logical connection
       end
 
-      def summary
+      def extract_summary
         Log.info("Summarizing...")
         types = Hash.new(0)
 
@@ -150,9 +166,9 @@ module DbMeta
 
         # invalid objects
         if @invalid_objects.size == 0
-          buffer << 'No invalid objects'
+          buffer << 'No invalid/disabled objects'
         else
-          buffer << 'Invalid Objects'
+          buffer << 'Invalid/Disabled Objects'
           @invalid_objects.each_pair do |type, objects|
             buffer << "#{SUMMARY_COLUMN_FORMAT_NAME % type.upcase.to_s}#{"%5d" % objects.size}"
             objects.each do |object|
@@ -163,13 +179,8 @@ module DbMeta
         end
         buffer << nil
 
-        File.open(File.join(@base_folder, "#{"%02d" % type_sequence('SUMMARY')}_summary.txt"), 'w') do |output|
-          output.write(buffer.join("\n"))
-        end
-      end
-
-      def type_sequence(type)
-        return TYPE_SEQUENCE[type] || 99
+        filename = File.join(@base_folder, "#{"%02d" % type_sequence('SUMMARY')}_summary.txt")
+        write_buffer_to_file(buffer, filename)
       end
 
       def extract_create_all(args={})
@@ -181,7 +192,7 @@ module DbMeta
         buffer << '-- ' + ('-' * 80)
 
         current_type = nil
-        @objects.each do |object|
+        @objects_to_extract.each do |object|
           buffer << nil if current_type != object.type
           folder = "#{'%02d' % type_sequence(object.type)}_#{object.type.downcase}"
           file = "#{object.name.downcase}.sql"
@@ -189,9 +200,8 @@ module DbMeta
           current_type = object.type
         end
 
-        File.open(File.join(@base_folder,"#{'%02d' % type_sequence('CREATE')}_create_all.sql"), 'w') do |output|
-          output.write(buffer.join("\n"))
-        end
+        filename = File.join(@base_folder,"#{'%02d' % type_sequence('CREATE')}_create_all.sql")
+        write_buffer_to_file(buffer, filename)
       end
 
       def extract_drop_all(args={})
@@ -204,15 +214,25 @@ module DbMeta
         buffer << nil
 
         current_type = nil
-        @objects.reverse_each do |object|
+        @objects_to_extract.reverse_each do |object|
           buffer << nil if current_type != object.type
-          buffer << "DROP #{object.type} #{object.name};"
+          buffer << object.ddl_drop
           current_type = object.type
         end
         buffer << nil
 
-        File.open(File.join(@base_folder,"#{'%02d' % type_sequence('DROP')}_drop_all.sql"), 'w') do |output|
-          output.write(buffer.join("\n"))
+        filename = File.join(@base_folder,"#{'%02d' % type_sequence('DROP')}_drop_all.sql")
+        write_buffer_to_file(buffer, filename)
+      end
+
+      def type_sequence(type)
+        return TYPE_SEQUENCE[type] || 99
+      end
+
+      def write_buffer_to_file(buffer, file)
+        buffer = buffer.join("\n") if buffer.is_a?(Array)
+        File.open(file, 'w') do |output|
+          output.write(buffer)
         end
       end
 

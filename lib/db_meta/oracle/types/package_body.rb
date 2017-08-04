@@ -1,7 +1,7 @@
 module DbMeta
   module Oracle
-    class Lob < Base
-      register_type('LOB')
+    class PackageBody < Base
+      register_type('PACKAGE BODY')
 
       def initialize(args={})
         super(args)

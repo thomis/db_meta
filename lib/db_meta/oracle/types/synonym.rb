@@ -5,6 +5,12 @@ module DbMeta
 
       attr_reader :table_owner, :table_name, :db_link
 
+      def initialize(args={})
+        super(args)
+
+        @extract_type = :merged
+      end
+
       def fetch(args={})
         connection = Connection.instance.get
         cursor = connection.exec("select table_owner, table_name, db_link from user_synonyms where synonym_name = '#{@name}'")

@@ -4,7 +4,7 @@ module DbMeta
 
       TYPES = {}
 
-      attr_accessor :type, :status, :name
+      attr_accessor :type, :status, :name, :extract_type
 
       def self.register_type(type)
         TYPES[type] = self
@@ -27,6 +27,8 @@ module DbMeta
 
         @status = :unknown
         @status = args['STATUS'].downcase.to_sym if args['STATUS']
+
+        @extract_type = :default # :default, :embedded, :merged
       end
 
 
@@ -35,6 +37,10 @@ module DbMeta
 
       def extract(args={})
         'needs to be implemented'
+      end
+
+      def ddl_drop
+        "DROP #{@type} #{@name};"
       end
 
     end

@@ -2,10 +2,8 @@
 -- DB Meta - to do list
 -- -----------------------------------------------------------------------------
 
-- iot tables
-- index
+- iot tables (partly ok)
 - constraint
-- lob
 - materialized view
 - type
 - grants
@@ -24,3 +22,4 @@
 - synonym
 - database link
 - index
+- lob (part of a table definition)

@@ -1,7 +1,7 @@
 module DbMeta
   module Oracle
-    class Lob < Base
-      register_type('LOB')
+    class Constraint < Base
+      register_type('CONSTRAINT')
 
       def initialize(args={})
         super(args)
