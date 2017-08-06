@@ -34,7 +34,6 @@ module DbMeta
 
         buffer = []
         buffer << line
-        buffer << nil
         buffer.join("\n")
       end
 

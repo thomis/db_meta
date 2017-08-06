@@ -1,6 +1,7 @@
 module DbMeta
   module Oracle
     class Base
+      include DbMeta::Oracle::Helper
 
       TYPES = {}
 

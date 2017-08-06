@@ -32,7 +32,7 @@ module DbMeta
 
 
       def extract(args={})
-        buffer = []
+        buffer = [block(@name), nil]
         buffer << "CREATE#{" #{@temporary}" if @temporary} TABLE #{@name}"
         buffer << '('
 

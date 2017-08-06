@@ -23,7 +23,7 @@ module DbMeta
       end
 
       def extract(args={})
-        buffer = []
+        buffer = [block(@name), nil]
         buffer << "CREATE SEQUENCE #{@name}"
         buffer << "  START WITH #{@last_number}"
         buffer << "  MAXVALUE #{@max_value}"
