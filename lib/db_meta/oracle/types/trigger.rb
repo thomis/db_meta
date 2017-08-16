@@ -8,7 +8,7 @@ module DbMeta
       def initialize(args={})
         super(args)
 
-        @report_type = :embedded
+        @extract_type = :embedded
       end
 
       def fetch
@@ -31,7 +31,7 @@ module DbMeta
       end
 
       def extract(args={})
-        buffer = [block(@name), nil]
+        buffer = []
         buffer << "CREATE OR REPLACE TRIGGER #{@name}"
         buffer << "#{@trigger_type} #{@triggering_event}"
         buffer << "ON #{@table_name}"

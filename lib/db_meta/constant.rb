@@ -36,7 +36,7 @@ module DbMeta
       union all
       select 'CONSTRAINT' as OBJECT_TYPE, CONSTRAINT_NAME as OBJECT_NAME, STATUS from user_constraints
       union all
-      select 'GRANT' as OBJECT_TYPE, privilege || ' ON '|| owner || '.' || table_name || ' TO ' || grantee as object_name, 'VALID' as status from user_tab_privs
+      select 'GRANT' as OBJECT_TYPE, grantee || ',' || owner || ',' || table_name || ',' || grantor || ',' || privilege || ',' || grantable as object_name, 'VALID' as status from user_tab_privs
     ) order by object_type, object_name
   "
 

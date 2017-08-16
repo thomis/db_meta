@@ -25,7 +25,7 @@ module DbMeta
       end
 
       def extract(args={})
-        buffer = [block(@name), nil]
+        buffer = [block(@name)]
         buffer << @header.strip
         buffer << '/'
         buffer << nil

@@ -9,9 +9,8 @@ module DbMeta
 
       def extract
         buffer = "#{'%-30s' % @name}"
-        buffer << " #{ '%-25s' % convert_type}"
-        buffer << '%-20s' % ( @data_default.size > 0 ? "DEFAULT #{@data_default}" : '' )
-        buffer << '%-8s' % ( @nullable == 'Y' ? '' : 'NOT NULL')
+        buffer << " #{convert_type}"
+        buffer << " DEFAULT #{@data_default}" if @data_default.size > 0
         return buffer
       end
 

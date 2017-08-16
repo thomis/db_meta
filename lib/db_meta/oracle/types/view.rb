@@ -26,7 +26,7 @@ module DbMeta
 
 
       def extract(args={})
-        buffer = [block(@name), nil]
+        buffer = [block(@name)]
         buffer << "CREATE OR REPLACE VIEW #{@name}"
         buffer << '('
 

@@ -1,6 +1,6 @@
 module DbMeta
   module Oracle
-    class SynonymCollection
+    class GrantCollection
       include DbMeta::Oracle::Helper
 
       attr_reader :name, :type, :status, :extract_type, :collection

@@ -2,13 +2,9 @@
 -- DB Meta - to do list
 -- -----------------------------------------------------------------------------
 
-- iot tables (partly ok)
-- constraint
+- storage clauses
 - materialized view
 - type
-- grants
-
-- merge types (exp. table, index, constraints; synonyms)
 
 -- -------------------------------------
 -- DONE
@@ -23,3 +19,8 @@
 - database link
 - index
 - lob (part of a table definition)
+- iot
+- constraints
+- grants
+- merge types (exp. table, index, constraints; synonyms)
+- grants

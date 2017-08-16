@@ -35,10 +35,7 @@ module DbMeta
       end
 
       def extract(args={})
-        buffer = []
-        buffer << "CREATE#{ @uniqueness == 'UNIQUE' ? ' UNIQUE' : nil } INDEX #{@name} ON #{@table_name}(#{@columns.join(', ')});"
-        buffer << nil
-        buffer.join("\n")
+        "CREATE#{ @uniqueness == 'UNIQUE' ? ' UNIQUE' : nil } INDEX #{@name} ON #{@table_name}(#{@columns.join(', ')});"
       end
 
     end

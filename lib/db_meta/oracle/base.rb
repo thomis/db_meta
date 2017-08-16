@@ -44,6 +44,11 @@ module DbMeta
         "DROP #{@type} #{@name};"
       end
 
+      def system_object?
+        # true if there is a '$' in the object name
+        @name =~ /\$/i
+      end
+
     end
   end
 end

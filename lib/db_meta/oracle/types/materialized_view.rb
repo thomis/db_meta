@@ -4,7 +4,7 @@ module DbMeta
       register_type('MATERIALIZED VIEW')
 
       def extract(args={})
-        buffer = [block(@name), nil]
+        buffer = [block(@name)]
         buffer << "CREATE OR REPLACE VIEW #{@name}"
         buffer << '('
       end

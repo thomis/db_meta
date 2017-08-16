@@ -27,6 +27,11 @@ module DbMeta
       rescue
       end
 
+      def pluralize(n, singular, plural=nil)
+        return singular if n == 1
+        return (plural || (singular + 's'))
+      end
+
     end
   end
 end

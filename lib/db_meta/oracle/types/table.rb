@@ -9,8 +9,19 @@ module DbMeta
         super(args)
 
         @comment = nil # table level comment
+
+        @comment = nil
+        @columns = []
+        @indexes = []
+        @constraints = []
+        @triggers = []
       end
 
+      def add_object(object)
+        @indexes << object if object.type == 'INDEX'
+        @constraints << object if object.type == 'CONSTRAINT'
+        @triggers << object if object.type == 'TRIGGER'
+      end
 
       def fetch
         @comment = Comment.find(type: 'TABLE', name: @name)
@@ -32,7 +43,7 @@ module DbMeta
 
 
       def extract(args={})
-        buffer = [block(@name), nil]
+        buffer = [block(@name)]
         buffer << "CREATE#{" #{@temporary}" if @temporary} TABLE #{@name}"
         buffer << '('
 
@@ -42,13 +53,19 @@ module DbMeta
         end
 
         # Primary key definition must be here for IOT tables
-        # to do...
+        if @iot_type == 'IOT'
+          constraint = @constraints.select{ |c| c.constraint_type == 'PRIMARY KEY'}[0]
+          buffer[-1] += ','
+          buffer << "  CONSTRAINT #{constraint.name}"
+          buffer << "  PRIMARY KEY (#{constraint.columns.join(', ')})"
+          buffer << "  ENABLE VALIDATE"
+        end
 
         buffer << ')'
         buffer << translate_duration if @duration.size > 0
         buffer << @cache if @temporary
         buffer << "ORGANIZATION INDEX" if @iot_type == "IOT"
-        buffer << ';'
+        buffer[-1] += ';'
         buffer << nil
 
         # table comments
@@ -60,6 +77,33 @@ module DbMeta
         @columns.each do |column|
           next if column.comment.size == 0
           buffer << "COMMENT ON COLUMN #{@name}.#{column.name} IS '#{column.comment.gsub("'","''")}';"
+        end
+
+        # indexes
+        if @indexes.size > 0
+          buffer << block("Indexes", 40)
+          @indexes.each do |index|
+            line = ""
+            line << "-- System Index: " if index.system_object? || @iot_type == "IOT"
+            line << index.extract(args)
+            buffer << line
+          end
+          buffer << nil
+        end
+
+        # constaints
+        if @constraints.size > 0
+          buffer << block("Constraints", 40)
+          @constraints.each do |constraint|
+            buffer << constraint.extract(args)
+          end
+        end
+
+        # triggers
+        if @triggers.size > 0
+          buffer << block("Triggers", 40)
+          buffer << @triggers.map{ |o| o.extract(args) }.join("\n")
+          buffer << nil
         end
 
         buffer.join("\n")
