@@ -46,7 +46,7 @@ module DbMeta
 
       def system_object?
         # true if there is a '$' in the object name
-        @name =~ /\$/i
+        return @name =~ /\$/i
       end
 
     end

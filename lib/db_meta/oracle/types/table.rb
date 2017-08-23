@@ -94,8 +94,8 @@ module DbMeta
         # constaints
         if @constraints.size > 0
           buffer << block("Constraints", 40)
-          @constraints.each do |constraint|
-            buffer << constraint.extract(args)
+          @constraints.sort_by{ |c| [ Constraint.sort_value(c.constraint_type), c.name] }.each do |constraint|
+            buffer << constraint.extract(args.merge({comment: (constraint.constraint_type == 'FOREIGN KEY')}))
           end
         end
 
@@ -113,6 +113,39 @@ module DbMeta
         "DROP #{@type} #{@name} CASCADE CONSTRAINTS PURGE;"
       end
 
+      def system_object?
+        is_system_object = super
+        return is_system_object if is_system_object
+
+       # check for tables created based on materialized views
+        n = 0
+        connection = Connection.instance.get
+        cursor = connection.exec("select count(*) as n from user_mviews where mview_name = '#{@name}'")
+        cursor.fetch_hash do |item|
+          n = item['N']
+        end
+        cursor.close
+
+        return n == 1
+      ensure
+        connection.logoff if connection
+      end
+
+      def get_core_data_where_clause(id=1000000)
+        buffer = []
+        @constraints.each do |constraint|
+          if constraint.constraint_type == 'PRIMARY KEY'
+            constraint.columns.each do |column|
+              buffer << "#{column} < #{id}"
+            end
+          end
+        end
+
+        return '' if buffer.size == 0
+        buffer.insert(0, 'where')
+        buffer.join(' ')
+      end
+
       private
 
       def translate_duration
@@ -122,7 +155,7 @@ module DbMeta
           when "SYS$SESSION"
             return "ON COMMIT PRESERVE ROWS"
         else
-          return "-- table duration definition [#{@duration}] is unknown and needs maybe code change"
+          return "-- table duration definition [#{@duration}] is unknown and may need code adaptations"
         end
       end
 

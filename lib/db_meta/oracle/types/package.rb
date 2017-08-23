@@ -26,11 +26,11 @@ module DbMeta
 
       def extract(args={})
         buffer = [block(@name)]
-        buffer << @header.strip
+        buffer << "CREATE OR REPLACE #{@header.strip}"
         buffer << '/'
         buffer << nil
 
-        buffer << @body.strip
+        buffer << "CREATE OR REPLACE #{@body.strip}"
         buffer << '/'
         buffer << nil
 

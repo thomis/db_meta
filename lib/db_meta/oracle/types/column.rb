@@ -10,7 +10,7 @@ module DbMeta
       def extract
         buffer = "#{'%-30s' % @name}"
         buffer << " #{convert_type}"
-        buffer << " DEFAULT #{@data_default}" if @data_default.size > 0
+        buffer << " DEFAULT #{@data_default}".strip if @data_default.size > 0
         return buffer
       end
 

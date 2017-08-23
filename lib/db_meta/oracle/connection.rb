@@ -33,6 +33,7 @@ module DbMeta
         Log.info("Logged off from #{@username}@#{@database_instance}")
         @pool = nil
       end
+
     end
   end
 end

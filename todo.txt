@@ -4,7 +4,6 @@
 
 - storage clauses
 - materialized view
-- type
 
 -- -------------------------------------
 -- DONE
@@ -24,3 +23,21 @@
 - grants
 - merge types (exp. table, index, constraints; synonyms)
 - grants
+- type
+
+
+-- -------------------------------------
+-- dbms_metadata
+-- -------------------------------------
+Basically ok to fetch ddl script but you can not disable certain features (organized as, logging, schema name)
+
+# disable storage clause
+connection.exec("begin dbms_metadata.set_transform_param(dbms_metadata.session_transform,'STORAGE', false); end;")
+connection.exec("begin dbms_metadata.set_transform_param(dbms_metadata.session_transform,'TABLESPACE', false); end;")
+connection.exec("begin dbms_metadata.set_transform_param(dbms_metadata.session_transform,'SEGMENT_ATTRIBUTES', false); end;")
+connection.exec("begin dbms_metadata.set_transform_param(dbms_metadata.session_transform,'PRETTY', true); end;")
+
+cursor = connection.exec("select dbms_metadata.get_ddl(object_type=>'MATERIALIZED_VIEW', name=>'#{@name}') from dual")
+cursor.fetch do |item|
+  @output = item[0].read
+end

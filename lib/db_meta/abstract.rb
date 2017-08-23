@@ -19,6 +19,8 @@ module DbMeta
       @instance = args[:instance]
       @worker = args[:worker] || 10
 
+      @include = args[:include]
+
       @objects = []
       @invalid_objects = Hash.new([])
 

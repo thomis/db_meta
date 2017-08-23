@@ -38,7 +38,7 @@ module DbMeta
         buffer << ')'
         buffer << "AS"
         buffer << @source.strip
-        buffer << ';'
+        buffer[-1] += ';'
         buffer << nil
 
         # view comments

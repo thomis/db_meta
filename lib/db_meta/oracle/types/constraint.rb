@@ -17,6 +17,7 @@ module DbMeta
         cursor = connection.exec("select * from user_constraints where constraint_name = '#{@name}'")
         cursor.fetch_hash do |item|
           @constraint_type = translate_constraint_type(item['CONSTRAINT_TYPE'])
+          @extract_type = :merged if @constraint_type == 'FOREIGN KEY'
           @table_name = item['TABLE_NAME']
           @search_condition = item['SEARCH_CONDITION']
           @delete_rule = item['DELETE_RULE']
@@ -36,7 +37,7 @@ module DbMeta
         end
         cursor.close
 
-      rescue
+      ensure
         connection.logoff
       end
 
@@ -59,8 +60,15 @@ module DbMeta
         buffer << "  ON DELETE CASCADE" if @delete_rule == 'CASCADE'
         buffer << "  ENABLE VALIDATE"
         buffer << ");"
+
+        (0..buffer.size-1).each { |n|  buffer[n] = ('-- ' + buffer[n])}  if args[:comment] == true
+
         buffer << nil
         buffer.join("\n")
+      end
+
+      def self.sort_value(type)
+        ['PRIMARY KEY', 'FOREIGN KEY', 'UNIQUE', 'CHECK'].index(type)
       end
 
       private

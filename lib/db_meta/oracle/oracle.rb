@@ -24,7 +24,12 @@ module DbMeta
       end
 
       def fetch(args={})
+        @include_pattern = args[:include]
+        @exclude_pattern = args[:exclude]
+
         Objects.all.each do |object|
+          next if @exclude_pattern =~ object.name if @exclude_pattern
+          next unless @include_pattern =~ object.name if @include_pattern
           @objects << object
         end
 
@@ -47,7 +52,9 @@ module DbMeta
         @objects.merge_grants
         @objects.embed_indexes
         @objects.embed_constraints
+        @objects.merge_constraints
         @objects.embed_triggers
+        @objects.handle_table_data(args)
 
         extract_summary
         extract_create_all(args)
@@ -55,13 +62,12 @@ module DbMeta
 
         # extract all default objects
         @objects.default_each do |object|
-          folder = File.join(@base_folder, "#{"%02d" % type_sequence(object.type)}_#{object.type}".downcase)
+          folder = File.join(@base_folder, "#{"%02d" % type_sequence(object.type)}_#{object.type}")
           create_folder(folder)
 
-          filename = File.join(folder, "#{object.name.downcase}.#{format.to_s}")
+          filename = File.join(folder, "#{object.name}.#{format.to_s}")
           write_buffer_to_file(object.extract(args), filename)
         end
-
       end
 
       private
@@ -113,11 +119,13 @@ module DbMeta
             buffer << block(object.type, 40)
           end
 
-          folder = "#{'%02d' % type_sequence(object.type)}_#{object.type.downcase}"
-          file = "#{object.name.downcase}.sql"
-          buffer << "@#{File.join(folder,file)}"
+          folder = "#{'%02d' % type_sequence(object.type)}_#{object.type}"
+          file = "#{object.name}.sql"
+          buffer << "@#{File.join(folder,file).downcase.gsub(' ', '_')}"
           current_type = object.type
         end
+        buffer << nil
+        buffer << compile_invalid_script
         buffer << nil
 
         filename = File.join(@base_folder,"#{'%02d' % type_sequence('CREATE')}_create_all.sql")
@@ -144,6 +152,23 @@ module DbMeta
 
         filename = File.join(@base_folder,"#{'%02d' % type_sequence('DROP')}_drop_all.sql")
         write_buffer_to_file(buffer, filename)
+      end
+
+      def compile_invalid_script
+        buffer = [block('Compile invalid objects if needed', 40)]
+        buffer << "declare"
+        buffer << "begin"
+        buffer << "  for rec in (select object_name, object_type from user_objects where status = 'INVALID') loop"
+        buffer << "    if rec.object_type = 'PACKAGE' or rec.object_type = 'PACKAGE BODY' then"
+        buffer << "      execute immediate 'alter PACKAGE ' || rec.object_name || ' compile';"
+        buffer << "      execute immediate 'alter PACKAGE ' || rec.object_name || ' compile body';"
+        buffer << "    else"
+        buffer << "      execute immediate 'alter ' || rec.object_type || ' ' || rec.object_name || ' compile';"
+        buffer << "    end if;"
+        buffer << "  end loop;"
+        buffer << "end;"
+        buffer << "/"
+        buffer.join("\n")
       end
 
     end

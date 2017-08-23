@@ -30,7 +30,7 @@ module DbMeta
         end
         cursor.close
 
-      rescue
+      ensure
         connection.logoff
       end
 

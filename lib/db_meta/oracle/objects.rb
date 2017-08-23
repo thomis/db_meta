@@ -79,7 +79,7 @@ module DbMeta
       end
 
       def embed_constraints
-        Log.info("Embedding indexes...")
+        Log.info("Embedding constraints...")
 
         @data["CONSTRAINT"].values.each do |constraint|
           @data['TABLE'][constraint.table_name].add_object(constraint)
@@ -99,6 +99,39 @@ module DbMeta
             object.extract_type = :default
           end
         end
+      end
+
+      def merge_constraints
+        Log.info("Merging constraints...")
+        constraint_collection = ConstraintCollection.new(type: 'CONSTRAINT', name: 'ALL FOREIGN KEYS')
+
+        @data['CONSTRAINT'].values.each do |object|
+          next unless object.extract_type == :merged
+          constraint_collection << object
+        end
+
+        return if constraint_collection.empty?
+
+        self << constraint_collection
+        @summary['CONSTRAINT'] -= 1    # no need to count collection object
+      end
+
+      def handle_table_data(args)
+        Log.info("Handling table data...")
+
+        @exclude_data = args[:exclude_data] if args[:exclude_data]
+        @include_data = args[:include_data] if args[:include_data]
+
+        tables = []
+        @data['TABLE'].values.each do |table|
+          next if table.system_object?
+          next if table.name =~ @exclude_data if @exclude_data
+          next unless table.name =~ @include_data if @include_data
+          tables << table
+        end
+
+        self << TableDataCollection.new(name: 'ALL CORE DATA', type: 'DATA', tables: tables)
+        @summary['DATA'] -= 1 # no need to count DATA object
       end
 
       def default_each
@@ -138,6 +171,7 @@ module DbMeta
           yield type, objects
         end
       end
+
 
       def self.all
         objects = []

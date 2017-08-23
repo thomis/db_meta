@@ -13,7 +13,7 @@ module DbMeta
 
       def write_buffer_to_file(buffer, file)
         buffer = buffer.join("\n") if buffer.is_a?(Array)
-        File.open(file, 'w') do |output|
+        File.open(file.downcase.gsub(' ', '_'), 'w') do |output|
           output.write(buffer)
         end
       end
@@ -23,7 +23,7 @@ module DbMeta
       end
 
       def create_folder(folder)
-        Dir.mkdir(folder)
+        Dir.mkdir(folder.downcase.gsub(' ', '_'))
       rescue
       end
 
