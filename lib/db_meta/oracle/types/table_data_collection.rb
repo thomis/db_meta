@@ -44,7 +44,7 @@ module DbMeta
       end
 
       def ddl_drop
-        '-- be dropped with table object'
+        '-- will automatically be dropped with table object'
       end
 
       def system_object?
