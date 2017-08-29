@@ -4,6 +4,10 @@
 # Welcome to db_meta
 Database meta and core data extraction.
 
+## Is it production ready?
+
+Well, I would not say, but I am using it already for my database development work where the gem covers my needs. Be careful and check carefully. Please create an issue when you think that someting is work or missing.
+
 ## Installation
 via Gemfile
 ```
@@ -39,7 +43,7 @@ meta.extract
 - more to come...
 
 ## Planned Features
-...
+- Storage and tablespace clause
 
 ## Contributing
 ...
