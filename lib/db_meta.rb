@@ -23,16 +23,16 @@ module DbMeta
       Log.info("Fetching...")
       @abstract.fetch(args)
       Log.info("Fetch completed")
-    # rescue => e
-    #   Log.error(e.to_s)
+    rescue => e
+      Log.error(e.to_s)
     end
 
     def extract(args={})
       Log.info("Extracting...")
       @abstract.extract(args)
       Log.info("Extraction completed")
-    # rescue => e
-    #   Log.error(e.to_s)
+    rescue => e
+      Log.error(e.to_s)
     end
 
   end
