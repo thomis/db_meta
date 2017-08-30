@@ -8,6 +8,10 @@ module DbMeta
         @extract_type = :embedded
       end
 
+      def system_object?
+        true
+      end
+
     end
   end
 end
