@@ -37,7 +37,7 @@ module DbMeta
       end
 
       def extract(args={})
-        'needs to be implemented'
+        '-- class/method needs to be implemented'
       end
 
       def ddl_drop
