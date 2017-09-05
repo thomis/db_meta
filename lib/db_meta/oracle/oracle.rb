@@ -48,6 +48,7 @@ module DbMeta
         remove_folder(@base_folder)
         create_folder(@base_folder)
 
+        @objects.detect_system_objects
         @objects.merge_synonyms
         @objects.merge_grants
         @objects.embed_indexes
@@ -79,6 +80,7 @@ module DbMeta
 
         total = 0
         @objects.summary_each do |type, count|
+          next if count == 0
           total += count
           buffer << "#{SUMMARY_COLUMN_FORMAT_NAME % type.upcase.to_s}#{"%5d" % count} #{"(#{@objects.summary_system_object[type]} system #{pluralize(@objects.summary_system_object[type], 'object')})" if @objects.summary_system_object[type] > 0}"
         end

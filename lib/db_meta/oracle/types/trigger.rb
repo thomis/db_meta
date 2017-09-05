@@ -37,7 +37,7 @@ module DbMeta
         buffer << "ON #{@table_name}"
         buffer << "#{@referencing_names}"
         buffer << "#{@for_each}" if @for_each
-        buffer << "#{@trigger_body.strip}"
+        buffer << "#{@trigger_body.strip}" if @trigger_body
         buffer << '/'
         buffer << nil
         buffer.join("\n")

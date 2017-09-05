@@ -8,7 +8,7 @@ module DbMeta
 
       def initialize
         @data = Hash.new{ |h, type|  h[type] = {} }
-        @worker_queue = Queue.new
+        @worker_queue = ::Queue.new
         @types_with_object_status_default = []
 
         @summary = Hash.new{ |h, type| h[type] = 0 }
@@ -40,6 +40,23 @@ module DbMeta
           end
         end
         worker.map(&:join) # wait until all are done
+      end
+
+      def detect_system_objects
+        Log.info("Detecting system objects...")
+
+        # detect materialized view tables
+        @data['MATERIALZIED VIEW'].values.each do |object|
+          table = @data['TABLE'][object.name]
+          next unless table
+          table.system_object = true
+        end
+
+        @data['QUEUE'].values.each do |object|
+          table = @data['TABLE'][object.queue_table]
+          next unless table
+          table.system_object = true
+        end
       end
 
       def merge_synonyms
@@ -74,6 +91,7 @@ module DbMeta
         Log.info("Embedding indexes...")
 
         @data['INDEX'].values.each do |object|
+          next unless @data['TABLE'][object.table_name]
           @data['TABLE'][object.table_name].add_object(object)
         end
       end
@@ -82,6 +100,7 @@ module DbMeta
         Log.info("Embedding constraints...")
 
         @data["CONSTRAINT"].values.each do |constraint|
+          next unless @data['TABLE'][constraint.table_name]
           @data['TABLE'][constraint.table_name].add_object(constraint)
         end
       end

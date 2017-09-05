@@ -15,11 +15,14 @@ module DbMeta
 
       def extract(args={})
         buffer = [block(@name)]
+        buffer << "set define off;"
         buffer << nil
 
         connection = Connection.instance.get
 
         @tables.each do |table|
+          Log.info("Extracting data from #{table.name}...")
+
           buffer << block(table.name, 40)
 
           name_type_map = {}
@@ -66,11 +69,13 @@ module DbMeta
             when /varchar|char/i
               buffer << "'#{value.gsub("'","''")}'"
             when /clob/i
-              buffer << "'#{item.read}'"
+              buffer << "'#{value.read}'"
             when /date/i
               buffer << "to_date('#{value.strftime("%Y-%m-%d %H:%M:%S")}','YYYY-MM-DD HH24:MI:SS')"
             when /timestamp/i
-             buffer << "to_timezone('#{value.strftime("%Y-%m-%d %H:%M:%S %Z")}','YYYY-MM-DD HH24:MI:SS.FF TZD')"
+              buffer << "to_timezone('#{value.strftime("%Y-%m-%d %H:%M:%S %Z")}','YYYY-MM-DD HH24:MI:SS.FF TZD')"
+            when /raw/i
+              buffer << "'#{value.to_s}'"
           else
             buffer << value.to_s
           end

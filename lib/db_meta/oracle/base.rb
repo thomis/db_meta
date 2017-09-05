@@ -5,7 +5,7 @@ module DbMeta
 
       TYPES = {}
 
-      attr_accessor :type, :status, :name, :extract_type
+      attr_accessor :type, :status, :name, :extract_type, :system_object
 
       def self.register_type(type)
         TYPES[type] = self
@@ -30,6 +30,8 @@ module DbMeta
         @status = args['STATUS'].downcase.to_sym if args['STATUS']
 
         @extract_type = :default # :default, :embedded, :merged
+
+        @system_object = @name =~ /\$/i # true if there is a '$' in the object name
       end
 
 
@@ -45,8 +47,7 @@ module DbMeta
       end
 
       def system_object?
-        # true if there is a '$' in the object name
-        return @name =~ /\$/i
+        @system_object
       end
 
     end

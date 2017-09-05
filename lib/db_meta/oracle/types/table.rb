@@ -113,24 +113,6 @@ module DbMeta
         "DROP #{@type} #{@name} CASCADE CONSTRAINTS PURGE;"
       end
 
-      def system_object?
-        is_system_object = super
-        return is_system_object if is_system_object
-
-       # check for tables created based on materialized views
-        n = 0
-        connection = Connection.instance.get
-        cursor = connection.exec("select count(*) as n from user_mviews where mview_name = '#{@name}'")
-        cursor.fetch_hash do |item|
-          n = item['N']
-        end
-        cursor.close
-
-        return n == 1
-      ensure
-        connection.logoff if connection
-      end
-
       def get_core_data_where_clause(id=1000000)
         buffer = []
         @constraints.each do |constraint|

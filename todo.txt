@@ -3,7 +3,6 @@
 -- -----------------------------------------------------------------------------
 
 - storage clauses
-- materialized view
 
 -- -------------------------------------
 -- DONE
@@ -24,7 +23,8 @@
 - merge types (exp. table, index, constraints; synonyms)
 - grants
 - type
-
+- queues
+- materialized view
 
 -- -------------------------------------
 -- dbms_metadata
