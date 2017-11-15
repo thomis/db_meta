@@ -19,7 +19,7 @@ module DbMeta
 
       def extract(args={})
         buffer = [block(@name)]
-        buffer << @source.strip
+        buffer << "create or replace #{@source.strip}"
         buffer << '/'
         buffer << nil
         buffer.join("\n")

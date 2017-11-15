@@ -1,3 +1,7 @@
+## 0.2.2 / 2017-11-15
+
+* Edit: create or replace for functions and procedures
+
 ## 0.2.1 / 2017-11-07
 
 * Edit: Update dependencies rspec, bundler, ruby-oci8
