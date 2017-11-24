@@ -34,8 +34,8 @@ module DbMeta
         buffer << 'begin'
         buffer << '  dbms_aqadm.create_queue_table('
         buffer << "    queue_table => '#{@queue_table}',"
-        buffer << "    queue_payload_type => '#{@payload_type}'"
-        buffer << "    sort_list => '#{@sort_order}',"
+        buffer << "    queue_payload_type => '#{@payload_type}',"
+        buffer << "    sort_list => '#{sort_order_translated}',"
         buffer << "    compatible => '#{@compatible}'"
         buffer << '  );'
         buffer << 'end;'
@@ -67,6 +67,13 @@ module DbMeta
         buffer << 'end;'
         buffer << '/'
         buffer.join("\n")
+      end
+
+      private
+
+      def sort_order_translated
+        # ENQUEUE_TIME => ENQ_TIME, seems to be inconsistent from Oracle
+        @sort_order.gsub('ENQUEUE_TIME','ENQ_TIME')
       end
 
     end

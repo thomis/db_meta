@@ -1,3 +1,7 @@
+## 0.2.4 / 2017-11-24
+
+* Edit: sort order: ENQUEUE_TIME => ENQ_TIME
+
 ## 0.2.2 / 2017-11-15
 
 * Edit: create or replace for functions and procedures
