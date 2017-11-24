@@ -46,7 +46,7 @@ module DbMeta
         buffer << '  dbms_aqadm.create_queue('
         buffer << "    queue_name => '#{@name}',"
         buffer << "    queue_table => '#{@queue_table}',"
-        buffer << "    max_retires => #{@max_retries},"
+        buffer << "    max_retries => #{@max_retries},"
         buffer << "    retry_delay => #{@retry_delay}"
         buffer << '  );'
         buffer << "  dbms_aqadm.start_queue('#{@name}');"

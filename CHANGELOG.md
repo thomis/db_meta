@@ -1,3 +1,7 @@
+## 0.2.5 / 2017-11-24
+
+* Edit: Typo max_retires =>  max_retries
+
 ## 0.2.4 / 2017-11-24
 
 * Edit: sort order: ENQUEUE_TIME => ENQ_TIME
