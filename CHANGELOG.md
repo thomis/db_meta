@@ -1,3 +1,8 @@
+## 0.2.6 / 2018-02-16
+
+* Edit: Typo synonym
+* Edit: Used force => true when deleting a queue table
+
 ## 0.2.5 / 2017-11-24
 
 * Edit: Typo max_retires =>  max_retries

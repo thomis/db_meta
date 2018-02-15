@@ -63,7 +63,7 @@ module DbMeta
         buffer << "  dbms_aqadm.stop_queue('#{@name}');"
         buffer << "  dbms_aqadm.stop_queue('AQ$_#{@queue_table}_E');"
         buffer << "  dbms_aqadm.drop_queue(queue_name => '#{@name}');"
-        buffer << "  dbms_aqadm.drop_queue_table(queue_table => '#{@queue_table}');"
+        buffer << "  dbms_aqadm.drop_queue_table(queue_table => '#{@queue_table}', force => true);"
         buffer << 'end;'
         buffer << '/'
         buffer.join("\n")

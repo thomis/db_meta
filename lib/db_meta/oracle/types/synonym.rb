@@ -26,7 +26,7 @@ module DbMeta
 
       def extract(args={})
         line = ""
-        line << "CREATE OR REPALCE SYNONYM #{@name} FOR "
+        line << "CREATE OR REPLACE SYNONYM #{@name} FOR "
         line << "#{@table_owner}." if @table_owner.size > 0
         line << "#{@table_name}"
         line << "@#{@db_link}" if @db_link.size > 0
