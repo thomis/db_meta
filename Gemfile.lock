@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    db_meta (0.2.6)
+    db_meta (0.2.7)
       ruby-oci8 (~> 2.2)
 
 GEM
@@ -30,7 +30,7 @@ PLATFORMS
 DEPENDENCIES
   bundler (~> 1.16)
   db_meta!
-  rake (~> 12.2)
+  rake (~> 12.3)
   rspec (~> 3.7)
 
 BUNDLED WITH

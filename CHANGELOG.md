@@ -1,3 +1,8 @@
+## 0.2.7 / 2018-02-27
+
+* Update ruby-oci8 gem to 2.2.5.1
+* Update rake gem to 12.3.0
+
 ## 0.2.6 / 2018-02-16
 
 * Edit: Typo synonym
