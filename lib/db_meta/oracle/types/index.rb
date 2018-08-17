@@ -30,6 +30,14 @@ module DbMeta
         end
         cursor.close
 
+        # columns for function based indexs
+        cursor = connection.exec("select column_expression, column_position from user_ind_expressions where index_name = '#{@name}' order by column_position")
+        while row = cursor.fetch()
+          idx = row[1].to_i - 1
+          @columns[idx] = row[0]  # replace sys_... entry
+        end
+        cursor.close
+
       ensure
         connection.logoff
       end

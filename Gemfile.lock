@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    db_meta (0.2.7)
+    db_meta (0.2.8)
       ruby-oci8 (~> 2.2)
 
 GEM

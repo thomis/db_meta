@@ -41,6 +41,7 @@ meta.extract
 - Synonym
 - Database Link
 - Queue
+- Function based Indexes
 - more to come...
 
 ## Planned Features

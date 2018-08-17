@@ -25,6 +25,7 @@
 - type
 - queues
 - materialized view
+- function based indexes
 
 -- -------------------------------------
 -- dbms_metadata

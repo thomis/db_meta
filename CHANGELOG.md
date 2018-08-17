@@ -1,43 +1,58 @@
-## 0.2.7 / 2018-02-27
+## [0.2.7] - 2018-08-17
 
-* Update ruby-oci8 gem to 2.2.5.1
-* Update rake gem to 12.3.0
+### Added
+- Function based indexes
 
-## 0.2.6 / 2018-02-16
+## [0.2.7] - 2018-02-27
 
-* Edit: Typo synonym
-* Edit: Used force => true when deleting a queue table
+### Changed
+* ruby-oci8 gem to 2.2.5.1
+* rake gem to 12.3.0
 
-## 0.2.5 / 2017-11-24
+## [0.2.6] - 2018-02-16
 
-* Edit: Typo max_retires =>  max_retries
+### Changed
+- Typo synonym
+- Used force => true when deleting a queue table
 
-## 0.2.4 / 2017-11-24
+## [0.2.5] - 2017-11-24
 
-* Edit: sort order: ENQUEUE_TIME => ENQ_TIME
+### Changed
+- Typo max_retires =>  max_retries
 
-## 0.2.2 / 2017-11-15
+## [0.2.4] - 2017-11-24
 
-* Edit: create or replace for functions and procedures
+### Changed
+- Sort order: ENQUEUE_TIME => ENQ_TIME
 
-## 0.2.1 / 2017-11-07
+## [0.2.2] - 2017-11-15
 
-* Edit: Update dependencies rspec, bundler, ruby-oci8
-* Edit: Travis settings
+### Changed
+- create or replace for functions and procedures
 
-## 0.1.3 / 2017-08-29
+## [0.2.1] - 2017-11-07
 
-* very early version where most of the core oracle types are supported
-* ability to extract core data
+### Changed
+- Update dependencies rspec, bundler, ruby-oci8
+- Travis settings
 
-## 0.1.2 / 2017-08-03
+## [0.1.3] - 2017-08-29
 
-* another very early version
+### Added
+- very early version where most of the core oracle types are supported
+- ability to extract core data
 
-## 0.1.1 / 2016-05-10
+## [0.1.2] - 2017-08-03
 
-* very early development version
+### Added
+- another very early version
 
-## 0.1.0 / 2016-05-10
+## [0.1.1] - 2016-05-10
 
-* initial setup
+### Added
+- very early development version
+
+## [0.1.0] - 2016-05-10
+
+### Added
+- initial setup
