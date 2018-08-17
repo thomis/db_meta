@@ -1,5 +1,4 @@
 [![Gem Version](https://badge.fury.io/rb/db_meta.svg)](https://badge.fury.io/rb/db_meta)
-[![Dependency Status](https://gemnasium.com/badges/github.com/thomis/db_meta.svg)](https://gemnasium.com/github.com/thomis/db_meta)
 
 # Welcome to db_meta
 Database meta and core data extraction.

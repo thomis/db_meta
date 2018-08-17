@@ -6,7 +6,7 @@ require 'db_meta/version'
 Gem::Specification.new do |spec|
   spec.name          = "db_meta"
   spec.version       = DbMeta::VERSION
-  spec.license       = 'MIT'
+  spec.license       = 'Apache-2.0'
   spec.authors       = ["Thomi"]
   spec.email         = ["thomas.steiner@ikey.ch"]
 
