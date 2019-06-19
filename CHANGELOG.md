@@ -1,3 +1,9 @@
+## [0.3.1] - 2019-06-19
+
+### Changed
+- Extract table data when primary key spans over multiple columns
+- Update bundler
+
 ## [0.3.0] - 2018-08-17
 
 ### Changed

@@ -30,7 +30,8 @@ module DbMeta
             name_type_map[column.name] = column.type
           end
 
-          cursor = connection.exec("select * from #{table.name} #{table.get_core_data_where_clause}")
+          statement = "select * from #{table.name} #{table.get_core_data_where_clause}"
+          cursor = connection.exec(statement)
           cursor.fetch_hash do |item|
             buffer << "insert into #{table.name}(#{item.keys.join(', ')}) values(#{format_values(name_type_map, item)});"
           end

@@ -124,8 +124,8 @@ module DbMeta
         end
 
         return '' if buffer.size == 0
-        buffer.insert(0, 'where')
-        buffer.join(' ')
+
+        'where ' + buffer.join(' and ')
       end
 
       private
