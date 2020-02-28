@@ -1,4 +1,5 @@
 [![Gem Version](https://badge.fury.io/rb/db_meta.svg)](https://badge.fury.io/rb/db_meta)
+[![Build Status](https://travis-ci.org/thomis/db_meta.svg?branch=master)](https://travis-ci.org/thomis/db_meta)
 
 # Welcome to db_meta
 Database meta and core data extraction.
