@@ -1,12 +1,36 @@
-language: ruby
-os:
-  - linux
-  - osx
-osx_image: xcode9.1
-rvm:
-  - 2.4.2
-  - 2.4.1
-  - 2.3.1
-  - 2.1.5
+sudo: required
+
+env:
+  global:
+    - ORACLE_COOKIE=sqldev
+    - ORACLE_FILE=oracle11g/xe/oracle-xe-11.2.0-1.0.x86_64.rpm.zip
+    - ORACLE_HOME=/u01/app/oracle/product/11.2.0/xe
+    - NLS_LANG=AMERICAN_AMERICA.AL32UTF8
+    - ORACLE_BASE=/u01/app/oracle
+    - LD_LIBRARY_PATH=$ORACLE_HOME/lib
+    - PATH=$PATH:$ORACLE_HOME/jdbc/lib
+    - DATABASE_VERSION=11.2.0.2
+    - ORACLE_SID=XE
+    - DATABASE_NAME=XE
+    - ORA_SDTZ='Europe/London' # Needed as a client parameter
+    - TZ='Europe/London'       # Needed as a DB Server parameter
+
 before_install:
-  - gem install bundler --version '~> 1.16.0'
+  - chmod +x .travis/oracle/download.sh
+  - chmod +x .travis/oracle/install.sh
+  - chmod +x .travis/setup_accounts.sh
+  - gem install bundler --version '~> 2.1.4'
+
+install:
+  - .travis/oracle/download.sh
+  - .travis/oracle/install.sh
+  - .travis/setup_accounts.sh
+  - bundle install
+
+language: ruby
+rvm:
+  - 2.7.0
+  - 2.6.3
+  - 2.5.5
+  - 2.4.6
+  - 2.3.8
