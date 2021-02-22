@@ -5,7 +5,7 @@ module DbMeta
 
       attr_reader :name, :type, :status, :extract_type, :collection
 
-      def initialize(args={})
+      def initialize(args = {})
         @name = args[:name]
         @type = args[:type]
         @status = :valid
@@ -13,9 +13,10 @@ module DbMeta
         @tables = args[:tables]
       end
 
-      def extract(args={})
+      def extract(args = {})
         buffer = [block(@name)]
         buffer << "set define off;"
+        buffer << "set sqlblanklines on;"
         buffer << nil
 
         connection = Connection.instance.get
@@ -33,13 +34,13 @@ module DbMeta
           statement = "select * from #{table.name} #{table.get_core_data_where_clause}"
           cursor = connection.exec(statement)
           cursor.fetch_hash do |item|
-            buffer << "insert into #{table.name}(#{item.keys.join(', ')}) values(#{format_values(name_type_map, item)});"
+            buffer << "insert into #{table.name}(#{item.keys.join(", ")}) values(#{format_values(name_type_map, item)});"
           end
           cursor.close
           buffer << nil
         end
 
-        buffer << 'commit;'
+        buffer << "commit;"
         buffer << nil
 
         buffer.join("\n")
@@ -48,7 +49,7 @@ module DbMeta
       end
 
       def ddl_drop
-        '-- will automatically be dropped with table object'
+        "-- will automatically be dropped with table object"
       end
 
       def system_object?
@@ -61,31 +62,34 @@ module DbMeta
         buffer = []
 
         item.each_pair do |key, value|
-          if value == nil
-            buffer << 'NULL'
+          if value.nil?
+            buffer << "NULL"
             next
           end
 
-          case name_type_map[key]
+          buffer << case name_type_map[key]
             when /varchar|char/i
-              buffer << "'#{value.gsub("'","''")}'"
+              "'#{value.gsub("'", "''")}'"
             when /clob/i
-              buffer << "'#{value.read}'"
+              m = []
+              d = value.read
+              d.chars.each_slice(2000).map(&:join).each do |item|
+                m << "to_clob('#{item}')"
+              end
+              m.join(" || ")
             when /date/i
-              buffer << "to_date('#{value.strftime("%Y-%m-%d %H:%M:%S")}','YYYY-MM-DD HH24:MI:SS')"
+              "to_date('#{value.strftime("%Y-%m-%d %H:%M:%S")}','YYYY-MM-DD HH24:MI:SS')"
             when /timestamp/i
-              buffer << "to_timezone('#{value.strftime("%Y-%m-%d %H:%M:%S %Z")}','YYYY-MM-DD HH24:MI:SS.FF TZD')"
+              "to_timezone('#{value.strftime("%Y-%m-%d %H:%M:%S %Z")}','YYYY-MM-DD HH24:MI:SS.FF TZD')"
             when /raw/i
-              buffer << "'#{value.to_s}'"
-          else
-            buffer << value.to_s
+              "'#{value}'"
+            else
+              value.to_s
           end
         end
 
-        buffer.join(', ')
+        buffer.join(", ")
       end
-
     end
-
   end
 end

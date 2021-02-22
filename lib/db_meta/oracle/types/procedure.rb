@@ -1,7 +1,7 @@
 module DbMeta
   module Oracle
     class Procedure < Base
-      register_type('PROCEDURE')
+      register_type("PROCEDURE")
 
       attr_reader :source
 
@@ -9,7 +9,7 @@ module DbMeta
         @source = ""
         connection = Connection.instance.get
         cursor = connection.exec("select text from user_source where type = 'PROCEDURE' and name = '#{@name}' order by line")
-        while row = cursor.fetch()
+        while (row = cursor.fetch)
           @source << row[0].to_s
         end
         cursor.close
@@ -17,14 +17,13 @@ module DbMeta
         connection.logoff
       end
 
-      def extract(args={})
+      def extract(args = {})
         buffer = [block(@name)]
         buffer << "create or replace #{@source.strip}"
-        buffer << '/'
+        buffer << "/"
         buffer << nil
         buffer.join("\n")
       end
-
     end
   end
 end

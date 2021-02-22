@@ -5,7 +5,7 @@ module DbMeta
 
       attr_reader :name, :type, :status, :extract_type, :collection
 
-      def initialize(args={})
+      def initialize(args = {})
         @name = args[:name]
         @type = args[:type]
         @status = :valid
@@ -21,22 +21,20 @@ module DbMeta
         @collection << object
       end
 
-      def extract(args={})
+      def extract(args = {})
         buffer = [block(@name)]
-        buffer << @collection.map{ |o| o.extract(args) }
+        buffer << @collection.map { |o| o.extract(args) }
         buffer << nil
         buffer.join("\n")
       end
 
       def ddl_drop
-        @collection.reverse_each.map{ |o| o.ddl_drop }.join("\n")
+        @collection.reverse_each.map { |o| o.ddl_drop }.join("\n")
       end
 
       def system_object?
         false
       end
-
     end
-
   end
 end

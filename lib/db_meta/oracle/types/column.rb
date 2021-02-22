@@ -1,24 +1,23 @@
 module DbMeta
   module Oracle
     class Column
-
       attr_accessor :name, :type, :data_length, :data_precision, :data_scale, :nullable, :data_default, :comment
 
-      def initialize(args={})
+      def initialize(args = {})
       end
 
       def extract
-        buffer = "#{'%-30s' % @name}"
+        buffer = ("%-30s" % @name).to_s
         buffer << " #{convert_type}"
         buffer << " DEFAULT #{@data_default.strip}" if @data_default.size > 0
-        return buffer
+        buffer
       end
 
-      def self.all(args={})
+      def self.all(args = {})
         columns = []
         connection = Connection.instance.get
         cursor = connection.exec("select column_name, data_type, data_length, data_precision, data_scale, nullable, data_default from user_tab_columns where table_name = '#{args[:object_name]}' order by column_id")
-        while row = cursor.fetch()
+        while (row = cursor.fetch)
           column = Column.new(row)
           column.name = row[0].to_s
           column.type = row[1].to_s
@@ -30,7 +29,7 @@ module DbMeta
 
           # column comments
           cursor2 = connection.exec("select comments from user_col_comments where table_name = '#{args[:object_name]}' and column_name = '#{column.name}'")
-          while row2 = cursor2.fetch()
+          while (row2 = cursor2.fetch)
             column.comment = row2[0].to_s
           end
           cursor2.close
@@ -48,23 +47,22 @@ module DbMeta
 
       def convert_type
         case @type
-          when 'FLOAT'
-            buffer = "#{@type}"
+          when "FLOAT"
+            buffer = @type.to_s
             buffer << "(#{@data_precision})" unless @data_precision == 0
-            return buffer
-          when 'NUMBER'
-            buffer = "#{@type}"
+            buffer
+          when "NUMBER"
+            buffer = @type.to_s
             buffer << "(#{@data_precision}" unless @data_precision == 0
             buffer << ",#{@data_scale}" unless @data_scale == 0
             buffer << ")" if buffer.include?("(")
-            return buffer
+            buffer
           when /CHAR|RAW/
-            return "#{@type}(#{@data_length} BYTE)"
-        else
-          return @type
+            "#{@type}(#{@data_length} BYTE)"
+          else
+            @type
         end
       end
-
     end
   end
 end

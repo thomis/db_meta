@@ -1,5 +1,6 @@
-require 'rubygems'
-require 'db_meta'
+require "rubygems"
+require "db_meta"
 
-meta = DbMeta::DbMeta.new(username: 'a_username', password: 'a_password', instance: 'an_instance')
+meta = DbMeta::DbMeta.new(username: "guest", password: "guest", instance: "dbmeta")
 meta.fetch
+meta.extract

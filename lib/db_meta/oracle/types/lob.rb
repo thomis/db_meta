@@ -1,13 +1,12 @@
 module DbMeta
   module Oracle
     class Lob < Base
-      register_type('LOB')
+      register_type("LOB")
 
-      def initialize(args={})
+      def initialize(args = {})
         super(args)
         @extract_type = :embedded
       end
-
     end
   end
 end

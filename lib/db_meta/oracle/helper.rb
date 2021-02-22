@@ -1,19 +1,18 @@
 module DbMeta
   module Oracle
     module Helper
-
       def block(title, size = 80)
-        line = '-- ' + ('-' * (size-3))
-        buffer = [line, "-- #{title}", line].join("\n")
+        line = "-- " + ("-" * (size - 3))
+        [line, "-- #{title}", line].join("\n")
       end
 
       def type_sequence(type)
-        return TYPE_SEQUENCE[type] || 99
+        TYPE_SEQUENCE[type] || 99
       end
 
       def write_buffer_to_file(buffer, file)
         buffer = buffer.join("\n") if buffer.is_a?(Array)
-        File.open(file.downcase.gsub(' ', '_'), 'w') do |output|
+        File.open(file.downcase.tr(" ", "_"), "w") do |output|
           output.write(buffer)
         end
       end
@@ -23,15 +22,14 @@ module DbMeta
       end
 
       def create_folder(folder)
-        Dir.mkdir(folder.downcase.gsub(' ', '_'))
+        Dir.mkdir(folder.downcase.tr(" ", "_"))
       rescue
       end
 
-      def pluralize(n, singular, plural=nil)
+      def pluralize(n, singular, plural = nil)
         return singular if n == 1
-        return (plural || (singular + 's'))
+        (plural || (singular + "s"))
       end
-
     end
   end
 end

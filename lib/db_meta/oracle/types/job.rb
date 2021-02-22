@@ -1,9 +1,9 @@
 module DbMeta
   module Oracle
     class Job < Base
-      register_type('JOB')
+      register_type("JOB")
 
-      def initialize(args={})
+      def initialize(args = {})
         super(args)
         @extract_type = :embedded
       end
@@ -11,7 +11,6 @@ module DbMeta
       def system_object?
         true
       end
-
     end
   end
 end

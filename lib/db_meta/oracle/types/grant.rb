@@ -1,25 +1,25 @@
 module DbMeta
   module Oracle
     class Grant < Base
-      register_type('GRANT')
+      register_type("GRANT")
 
       attr_reader :grantee, :owner, :table_name, :grantor, :privilege, :grantable
 
-      def initialize(args={})
+      def initialize(args = {})
         super(args)
         @extract_type = :merged
       end
 
-      def fetch(args={})
+      def fetch(args = {})
         # definition is comma seperated in the name to prevent re-fetching table for every grant
-        @grantee, @owner, @table_name, @grantor, @privilege, @grantable = @name.split(',')
+        @grantee, @owner, @table_name, @grantor, @privilege, @grantable = @name.split(",")
       end
 
-      def extract(args={})
+      def extract(args = {})
         buffer = ""
-        buffer << ( '%-30s' % "-- granted via #{@grantor}: ") if external_grant?
+        buffer << ("%-30s" % "-- granted via #{@grantor}: ") if external_grant?
         buffer << "GRANT #{"%-18s" % @privilege} ON #{"%-32s" % @table_name} TO #{@grantee}"
-        buffer << " WITH GRANT OPTION" if @grantable == 'YES'
+        buffer << " WITH GRANT OPTION" if @grantable == "YES"
         buffer << ";"
         buffer
       end
@@ -27,7 +27,7 @@ module DbMeta
       def ddl_drop
         buffer = ""
 
-        buffer << ( '%-30s' % "-- granted via #{@grantor}: ") if external_grant?
+        buffer << ("%-30s" % "-- granted via #{@grantor}: ") if external_grant?
         buffer << "REVOKE #{"%-18s" % @privilege} ON #{"%-32s" % @table_name} FROM #{@grantee};"
         buffer
       end
@@ -38,9 +38,8 @@ module DbMeta
 
       def sort_value
         return ["2", @grantor, @privilege, @table_name] if external_grant?
-        return ["1", @grantee, @privilege, @table_name]
+        ["1", @grantee, @privilege, @table_name]
       end
-
     end
   end
 end

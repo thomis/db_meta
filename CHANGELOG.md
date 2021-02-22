@@ -1,3 +1,10 @@
+## [0.5.0] - 2021-02-22
+
+### Changed
+- Update gem dependencies
+- Number of thread settings
+- Ruby style guide applied through standradrb gem
+
 ## [0.4.0] - 2020-02-28
 
 ### Changed

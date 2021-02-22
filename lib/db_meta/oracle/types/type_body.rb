@@ -1,13 +1,12 @@
 module DbMeta
   module Oracle
     class TypeBody < Base
-      register_type('TYPE BODY')
+      register_type("TYPE BODY")
 
-      def initialize(args={})
+      def initialize(args = {})
         super(args)
         @extract_type = :embedded
       end
-
     end
   end
 end

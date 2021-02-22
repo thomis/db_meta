@@ -7,13 +7,13 @@ module DbMeta
       attr_reader :summary_system_object
 
       def initialize
-        @data = Hash.new{ |h, type|  h[type] = {} }
+        @data = Hash.new { |h, type| h[type] = {} }
         @worker_queue = ::Queue.new
         @types_with_object_status_default = []
 
-        @summary = Hash.new{ |h, type| h[type] = 0 }
-        @summary_system_object = Hash.new{ |h, type| h[type] = 0 }
-        @invalids = Hash.new{ |h, type| h[type] = [] }
+        @summary = Hash.new { |h, type| h[type] = 0 }
+        @summary_system_object = Hash.new { |h, type| h[type] = 0 }
+        @invalids = Hash.new { |h, type| h[type] = [] }
       end
 
       def <<(object)
@@ -25,20 +25,18 @@ module DbMeta
         @invalids[object.type] << object if [:invalid, :disabled].include?(object.status)
       end
 
-      def fetch(args={})
+      def fetch(args = {})
         # fetch details in parallel
-        # start as many worker threads as max physical connections
-        worker = (1..Connection.instance.worker).map do
+        # number of threads = physical connections / 2 to prevent application locking
+        worker = (1..Connection.instance.worker / 2).map {
           Thread.new do
-            begin
-              while object = @worker_queue.pop(true)
-                Log.info(" - #{object.type} - #{object.name}")
-                object.fetch
-              end
-            rescue ThreadError
+            while (object = @worker_queue.pop(true))
+              Log.info(" - #{object.type} - #{object.name}")
+              object.fetch
             end
+          rescue ThreadError
           end
-        end
+        }
         worker.map(&:join) # wait until all are done
       end
 
@@ -46,14 +44,14 @@ module DbMeta
         Log.info("Detecting system objects...")
 
         # detect materialized view tables
-        @data['MATERIALZIED VIEW'].values.each do |object|
-          table = @data['TABLE'][object.name]
+        @data["MATERIALZIED VIEW"].values.each do |object|
+          table = @data["TABLE"][object.name]
           next unless table
           table.system_object = true
         end
 
-        @data['QUEUE'].values.each do |object|
-          table = @data['TABLE'][object.queue_table]
+        @data["QUEUE"].values.each do |object|
+          table = @data["TABLE"][object.queue_table]
           next unless table
           table.system_object = true
         end
@@ -61,38 +59,38 @@ module DbMeta
 
       def merge_synonyms
         Log.info("Merging synonyms...")
-        synonym_collection = SynonymCollection.new(type: 'SYNONYM', name: 'ALL')
+        synonym_collection = SynonymCollection.new(type: "SYNONYM", name: "ALL")
 
-        @data['SYNONYM'].values.each do |object|
+        @data["SYNONYM"].values.each do |object|
           synonym_collection << object
         end
 
         return if synonym_collection.empty?
 
         self << synonym_collection
-        @summary['SYNONYM'] -= 1    # no need to count collection object
+        @summary["SYNONYM"] -= 1 # no need to count collection object
       end
 
       def merge_grants
         Log.info("Merging grants...")
-        grant_collection = GrantCollection.new(type: 'GRANT', name: 'ALL')
+        grant_collection = GrantCollection.new(type: "GRANT", name: "ALL")
 
-        @data['GRANT'].values.sort_by{ |o| o.sort_value }.each do |object|
+        @data["GRANT"].values.sort_by { |o| o.sort_value }.each do |object|
           grant_collection << object
         end
 
         return if grant_collection.empty?
 
         self << grant_collection
-        @summary['GRANT'] -= 1    # no need to count collection object
+        @summary["GRANT"] -= 1 # no need to count collection object
       end
 
       def embed_indexes
         Log.info("Embedding indexes...")
 
-        @data['INDEX'].values.each do |object|
-          next unless @data['TABLE'][object.table_name]
-          @data['TABLE'][object.table_name].add_object(object)
+        @data["INDEX"].values.each do |object|
+          next unless @data["TABLE"][object.table_name]
+          @data["TABLE"][object.table_name].add_object(object)
         end
       end
 
@@ -100,8 +98,8 @@ module DbMeta
         Log.info("Embedding constraints...")
 
         @data["CONSTRAINT"].values.each do |constraint|
-          next unless @data['TABLE'][constraint.table_name]
-          @data['TABLE'][constraint.table_name].add_object(constraint)
+          next unless @data["TABLE"][constraint.table_name]
+          @data["TABLE"][constraint.table_name].add_object(constraint)
         end
       end
 
@@ -109,7 +107,7 @@ module DbMeta
         Log.info("Embedding triggers...")
 
         @data["TRIGGER"].values.each do |object|
-          table_object = @data['TABLE'][object.table_name]
+          table_object = @data["TABLE"][object.table_name]
 
           if table_object
             table_object.add_object(object)
@@ -122,9 +120,9 @@ module DbMeta
 
       def merge_constraints
         Log.info("Merging constraints...")
-        constraint_collection = ConstraintCollection.new(type: 'CONSTRAINT', name: 'ALL FOREIGN KEYS')
+        constraint_collection = ConstraintCollection.new(type: "CONSTRAINT", name: "ALL FOREIGN KEYS")
 
-        @data['CONSTRAINT'].values.each do |object|
+        @data["CONSTRAINT"].values.each do |object|
           next unless object.extract_type == :merged
           constraint_collection << object
         end
@@ -132,7 +130,7 @@ module DbMeta
         return if constraint_collection.empty?
 
         self << constraint_collection
-        @summary['CONSTRAINT'] -= 1    # no need to count collection object
+        @summary["CONSTRAINT"] -= 1 # no need to count collection object
       end
 
       def handle_table_data(args)
@@ -142,19 +140,23 @@ module DbMeta
         @include_data = args[:include_data] if args[:include_data]
 
         tables = []
-        @data['TABLE'].values.each do |table|
+        @data["TABLE"].values.each do |table|
           next if table.system_object?
-          next if table.name =~ @exclude_data if @exclude_data
-          next unless table.name =~ @include_data if @include_data
+          if @exclude_data
+            next if table.name&.match?(@exclude_data)
+          end
+          if @include_data
+            next unless table.name&.match?(@include_data)
+          end
           tables << table
         end
 
-        self << TableDataCollection.new(name: 'ALL CORE DATA', type: 'DATA', tables: tables)
-        @summary['DATA'] -= 1 # no need to count DATA object
+        self << TableDataCollection.new(name: "ALL CORE DATA", type: "DATA", tables: tables)
+        @summary["DATA"] -= 1 # no need to count DATA object
       end
 
       def default_each
-        @data.keys.sort_by{ |type| type_sequence(type) }.each do |type|
+        @data.keys.sort_by { |type| type_sequence(type) }.each do |type|
           @data[type].keys.sort.each do |name|
             object = @data[type][name]
             next if object.system_object?
@@ -165,7 +167,7 @@ module DbMeta
       end
 
       def reverse_default_each
-        @data.keys.sort_by{ |type| type_sequence(type) }.reverse_each do |type|
+        @data.keys.sort_by { |type| type_sequence(type) }.reverse_each do |type|
           @data[type].keys.sort.each do |name|
             object = @data[type][name]
             next if object.system_object?
@@ -191,7 +193,6 @@ module DbMeta
         end
       end
 
-
       def self.all
         objects = []
 
@@ -202,12 +203,12 @@ module DbMeta
         cursor = connection.exec(OBJECT_QUERY)
         cursor.fetch_hash do |item|
           items << item
-          types << item['OBJECT_TYPE']
+          types << item["OBJECT_TYPE"]
         end
         cursor.close
 
         # sort items and make an object instance
-        items.sort_by{ |i| [ type_sequence(i['OBJECT_TYPE']), i['OBJECT_NAME']]}.each do |item|
+        items.sort_by { |i| [type_sequence(i["OBJECT_TYPE"]), i["OBJECT_NAME"]] }.each do |item|
           objects << Base.from_type(item)
         end
 
@@ -215,9 +216,8 @@ module DbMeta
 
         objects
       ensure
-        connection.logoff if connection # closes logical connection
+        connection&.logoff # closes logical connection
       end
-
     end
   end
 end

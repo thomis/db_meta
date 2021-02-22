@@ -1,22 +1,22 @@
 module DbMeta
   module Oracle
     class View < Base
-      register_type('VIEW')
+      register_type("VIEW")
 
-      def initialize(args={})
+      def initialize(args = {})
         super(args)
 
         @comment = nil # view level comment
       end
 
-      def fetch(args={})
-        @comment = Comment.find(type: 'TABLE', name: @name)
+      def fetch(args = {})
+        @comment = Comment.find(type: "TABLE", name: @name)
         @columns = Column.all(object_name: @name)
 
         @source = ""
         connection = Connection.instance.get
         cursor = Connection.instance.get.exec("select text from user_views where view_name = '#{@name}'")
-        while row = cursor.fetch()
+        while (row = cursor.fetch)
           @source << row[0].to_s
         end
         cursor.close
@@ -24,37 +24,35 @@ module DbMeta
         connection.logoff
       end
 
-
-      def extract(args={})
+      def extract(args = {})
         buffer = [block(@name)]
         buffer << "CREATE OR REPLACE VIEW #{@name}"
-        buffer << '('
+        buffer << "("
 
         # add columns
         @columns.each_with_index do |c, index|
-          buffer << "  #{c.name}#{',' if index+1 < @columns.size}"
+          buffer << "  #{c.name}#{"," if index + 1 < @columns.size}"
         end
 
-        buffer << ')'
+        buffer << ")"
         buffer << "AS"
         buffer << @source.strip
-        buffer[-1] += ';'
+        buffer[-1] += ";"
         buffer << nil
 
         # view comments
         if @comment
-          buffer << "COMMENT ON VIEW #{@name} IS '#{@comment.text("'","''")}';"
+          buffer << "COMMENT ON VIEW #{@name} IS '#{@comment.text("'", "''")}';"
         end
 
         # view column comments
         @columns.each do |column|
           next if column.comment.size == 0
-          buffer << "COMMENT ON COLUMN #{@name}.#{column.name} IS '#{column.comment.gsub("'","''")}';"
+          buffer << "COMMENT ON COLUMN #{@name}.#{column.name} IS '#{column.comment.gsub("'", "''")}';"
         end
 
         buffer.join("\n")
       end
-
     end
   end
 end

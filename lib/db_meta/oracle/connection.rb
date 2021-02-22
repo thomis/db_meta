@@ -1,4 +1,4 @@
-require 'singleton'
+require "singleton"
 
 module DbMeta
   module Oracle
@@ -19,12 +19,12 @@ module DbMeta
       def get
         unless @pool
           # create connection pool
-          @pool = ::OCI8::ConnectionPool.new(2, @worker, 2, @username, @password, @database_instance)
+          @pool = ::OCI8::ConnectionPool.new(1, @worker, 1, @username, @password, @database_instance)
           Log.info("Connected to #{@username}@#{@database_instance}")
         end
 
         # create and return logical connection. It creates physical connection as needed.
-        return ::OCI8.new(@username, @password, @pool)
+        ::OCI8.new(@username, @password, @pool)
       end
 
       def disconnect
@@ -33,7 +33,6 @@ module DbMeta
         Log.info("Logged off from #{@username}@#{@database_instance}")
         @pool = nil
       end
-
     end
   end
 end
