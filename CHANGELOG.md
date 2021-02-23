@@ -1,3 +1,8 @@
+## [0.6.0] - 2021-02-23
+
+### Changed
+- Escape "'" and ";" for clob multiline strings (supports empty lines)
+
 ## [0.5.0] - 2021-02-22
 
 ### Changed

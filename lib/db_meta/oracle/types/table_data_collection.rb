@@ -74,7 +74,7 @@ module DbMeta
               m = []
               d = value.read
               d.chars.each_slice(2000).map(&:join).each do |item|
-                m << "to_clob('#{item}')"
+                m << "to_clob('#{item.gsub("'", "''").gsub(";", "' || CHR(59) || '")}')"
               end
               m.join(" || ")
             when /date/i
