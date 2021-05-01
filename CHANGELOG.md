@@ -1,3 +1,8 @@
+## [0.6.1] - 2021-05-01
+
+### Changed
+- Update gem dependencies
+
 ## [0.6.0] - 2021-02-23
 
 ### Changed
