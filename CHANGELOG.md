@@ -1,3 +1,8 @@
+## [0.6.2] - 2021-06-29
+
+### Changed
+- Fix check when column.comment is nil
+
 ## [0.6.1] - 2021-05-01
 
 ### Changed

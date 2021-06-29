@@ -22,7 +22,7 @@ module DbMeta
       @abstract.fetch(args)
       Log.info("Fetch completed")
     rescue => e
-      Log.error(e.to_s)
+      Log.error(e.backtrace.join("\n"))
     end
 
     def extract(args = {})
@@ -31,6 +31,7 @@ module DbMeta
       Log.info("Extraction completed")
     rescue => e
       Log.error(e.to_s)
+      Log.error(e.backtrace.join("\n"))
     end
   end
 end

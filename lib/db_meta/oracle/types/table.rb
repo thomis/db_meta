@@ -73,7 +73,7 @@ module DbMeta
 
         # table column comments
         @columns.each do |column|
-          next if column.comment.size == 0
+          next if column.comment.nil? || column.comment.size == 0
           buffer << "COMMENT ON COLUMN #{@name}.#{column.name} IS '#{column.comment.gsub("'", "''")}';"
         end
 
