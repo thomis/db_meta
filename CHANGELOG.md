@@ -3,6 +3,11 @@
 ### Changed
 - Fix check when column.comment is nil
 
+## [0.6.2] - 2021-07-21
+
+### Changed
+- Update ruby versions to test
+
 ## [0.6.1] - 2021-05-01
 
 ### Changed
