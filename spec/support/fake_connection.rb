@@ -9,4 +9,7 @@ class FakeConnection
 
   def logoff
   end
+
+  def username
+  end
 end
