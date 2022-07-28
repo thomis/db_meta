@@ -1,7 +1,7 @@
 [![Gem Version](https://badge.fury.io/rb/db_meta.svg)](https://badge.fury.io/rb/db_meta)
 [![Maintainability](https://api.codeclimate.com/v1/badges/ffd17b164da909c5c172/maintainability)](https://codeclimate.com/github/thomis/db_meta/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/ffd17b164da909c5c172/test_coverage)](https://codeclimate.com/github/thomis/db_meta/test_coverage)
-
+[![ci](https://github.com/thomis/db_meta/actions/workflows/ci.yml/badge.svg)](https://github.com/thomis/db_meta/actions/workflows/ci.yml)
 
 # Welcome to db_meta
 Database meta and core data extraction.
