@@ -12,7 +12,8 @@ module DbMeta
       end
 
       def fetch(args = {})
-        connection = Connection.instance.get
+        connection_class = args[:connection_class] || Connection
+        connection = connection_class.instance.get
         cursor = connection.exec("select table_owner, table_name, db_link from user_synonyms where synonym_name = '#{@name}'")
         while (row = cursor.fetch)
           @table_owner = row[0].to_s

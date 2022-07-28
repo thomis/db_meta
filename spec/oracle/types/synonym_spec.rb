@@ -12,4 +12,14 @@ RSpec.describe DbMeta::Oracle::Synonym do
   it "is not a system object" do
     expect(synonym.system_object?).to eq(false)
   end
+
+  it "fetches and extracts" do
+    instance = FakeConnection.instance.get
+    allow(instance).to receive(:exec) {
+      FakeCursor.new(rows: [["OWNER", "TABLE", "LINK"]])
+    }
+
+    synonym.fetch(connection_class: FakeConnection)
+    expect(synonym.extract).to eq("CREATE OR REPLACE SYNONYM EXAMPLE FOR OWNER.TABLE@LINK;")
+  end
 end
