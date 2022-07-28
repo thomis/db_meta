@@ -13,7 +13,7 @@ RSpec.describe DbMeta::Oracle::Trigger do
     expect(trigger.system_object?).to eq(false)
   end
 
-  it "fetches and extracts" do
+  it "fetches and extracts before trigger" do
     instance = FakeConnection.instance.get
     allow(instance).to receive(:exec) {
       FakeCursor.new(rows: [["BEFORE", "EVENT", "TABLE", "REFERENCING NAMES", "DESCRIPTION", "BODY;"]])
@@ -25,6 +25,43 @@ RSpec.describe DbMeta::Oracle::Trigger do
       BEFORE EVENT
       ON TABLE
       REFERENCING NAMES
+      BODY;
+      /
+    EOS
+    expect(trigger.extract).to eq(stmt)
+  end
+
+  it "fetches and extracts after trigger" do
+    instance = FakeConnection.instance.get
+    allow(instance).to receive(:exec) {
+      FakeCursor.new(rows: [["AFTER", "EVENT", "TABLE", "REFERENCING NAMES", "DESCRIPTION", "BODY;"]])
+    }
+    trigger.fetch(connection_class: FakeConnection)
+
+    stmt = <<~EOS
+      CREATE OR REPLACE TRIGGER EXAMPLE
+      AFTER EVENT
+      ON TABLE
+      REFERENCING NAMES
+      BODY;
+      /
+    EOS
+    expect(trigger.extract).to eq(stmt)
+  end
+
+  it "fetches and extracts instead of trigger" do
+    instance = FakeConnection.instance.get
+    allow(instance).to receive(:exec) {
+      FakeCursor.new(rows: [["INSTEAD OF", "EVENT", "TABLE", "REFERENCING NAMES", "DESCRIPTION", "BODY;"]])
+    }
+    trigger.fetch(connection_class: FakeConnection)
+
+    stmt = <<~EOS
+      CREATE OR REPLACE TRIGGER EXAMPLE
+      INSTEAD OF EVENT
+      ON TABLE
+      REFERENCING NAMES
+      FOR EACH ROW
       BODY;
       /
     EOS
