@@ -1,16 +1,16 @@
 require "spec_helper"
 
 RSpec.describe DbMeta::Oracle::Sequence do
-  let!(:synonym) {
+  let!(:sequence) {
     DbMeta::Oracle::Sequence.new("OBJECT_TYPE" => "SEQUENCE", "OBJECT_NAME" => "EXAMPLE")
   }
 
   it "has drop statement" do
-    expect(synonym.ddl_drop).to eq("DROP SEQUENCE EXAMPLE;")
+    expect(sequence.ddl_drop).to eq("DROP SEQUENCE EXAMPLE;")
   end
 
   it "is not a system object" do
-    expect(synonym.system_object?).to eq(false)
+    expect(sequence.system_object?).to eq(false)
   end
 
   it "fetches and extracts" do
@@ -18,7 +18,7 @@ RSpec.describe DbMeta::Oracle::Sequence do
     allow(instance).to receive(:exec) {
       FakeCursor.new(rows: [[1, 1000, 1, "N", "N", 5, 1]])
     }
-    synonym.fetch(connection_class: FakeConnection)
+    sequence.fetch(connection_class: FakeConnection)
 
     stmt = <<~EOS
       -- -----------------------------------------------------------------------------
@@ -33,6 +33,6 @@ RSpec.describe DbMeta::Oracle::Sequence do
         NOORDER
       ;
     EOS
-    expect(synonym.extract).to eq(stmt)
+    expect(sequence.extract).to eq(stmt)
   end
 end
