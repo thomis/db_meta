@@ -46,13 +46,13 @@ module DbMeta
         buffer << "  CONSTRAINT #{@name}"
 
         case @constraint_type
-          when "CHECK"
-            buffer << "  #{@constraint_type} (#{@search_condition})"
-          when "FOREIGN KEY"
-            buffer << "  #{@constraint_type} (#{@columns.join(", ")})"
-            buffer << "  REFERENCES #{@referential_constraint.table_name} (#{@referential_constraint.columns.join(", ")})"
-          else
-            buffer << "  #{@constraint_type} (#{@columns.join(", ")})"
+        when "CHECK"
+          buffer << "  #{@constraint_type} (#{@search_condition})"
+        when "FOREIGN KEY"
+          buffer << "  #{@constraint_type} (#{@columns.join(", ")})"
+          buffer << "  REFERENCES #{@referential_constraint.table_name} (#{@referential_constraint.columns.join(", ")})"
+        else
+          buffer << "  #{@constraint_type} (#{@columns.join(", ")})"
         end
 
         buffer << "  ON DELETE CASCADE" if @delete_rule == "CASCADE"
@@ -73,14 +73,14 @@ module DbMeta
 
       def translate_constraint_type(type)
         case type
-          when "P"
-            "PRIMARY KEY"
-          when "U"
-            "UNIQUE"
-          when "C"
-            "CHECK"
-          when "R"
-            "FOREIGN KEY"
+        when "P"
+          "PRIMARY KEY"
+        when "U"
+          "UNIQUE"
+        when "C"
+          "CHECK"
+        when "R"
+          "FOREIGN KEY"
         end
       end
     end

@@ -68,23 +68,23 @@ module DbMeta
           end
 
           buffer << case name_type_map[key]
-            when /varchar|char/i
-              "'#{value.gsub("'", "''")}'"
-            when /clob/i
-              m = []
-              d = value.read
-              d.chars.each_slice(2000).map(&:join).each do |item|
-                m << "to_clob('#{item.gsub("'", "''").gsub(";", "' || CHR(59) || '")}')"
-              end
-              m.join(" || ")
-            when /date/i
-              "to_date('#{value.strftime("%Y-%m-%d %H:%M:%S")}','YYYY-MM-DD HH24:MI:SS')"
-            when /timestamp/i
-              "to_timezone('#{value.strftime("%Y-%m-%d %H:%M:%S %Z")}','YYYY-MM-DD HH24:MI:SS.FF TZD')"
-            when /raw/i
-              "'#{value}'"
-            else
-              value.to_s
+          when /varchar|char/i
+            "'#{value.gsub("'", "''")}'"
+          when /clob/i
+            m = []
+            d = value.read
+            d.chars.each_slice(2000).map(&:join).each do |item|
+              m << "to_clob('#{item.gsub("'", "''").gsub(";", "' || CHR(59) || '")}')"
+            end
+            m.join(" || ")
+          when /date/i
+            "to_date('#{value.strftime("%Y-%m-%d %H:%M:%S")}','YYYY-MM-DD HH24:MI:SS')"
+          when /timestamp/i
+            "to_timezone('#{value.strftime("%Y-%m-%d %H:%M:%S %Z")}','YYYY-MM-DD HH24:MI:SS.FF TZD')"
+          when /raw/i
+            "'#{value}'"
+          else
+            value.to_s
           end
         end
 

@@ -3,9 +3,6 @@ module DbMeta
     class Column
       attr_accessor :name, :type, :data_length, :data_precision, :data_scale, :nullable, :data_default, :comment
 
-      def initialize(args = {})
-      end
-
       def extract
         buffer = ("%-30s" % @name).to_s
         buffer << " #{convert_type}"
@@ -47,20 +44,20 @@ module DbMeta
 
       def convert_type
         case @type
-          when "FLOAT"
-            buffer = @type.to_s
-            buffer << "(#{@data_precision})" unless @data_precision == 0
-            buffer
-          when "NUMBER"
-            buffer = @type.to_s
-            buffer << "(#{@data_precision}" unless @data_precision == 0
-            buffer << ",#{@data_scale}" unless @data_scale == 0
-            buffer << ")" if buffer.include?("(")
-            buffer
-          when /CHAR|RAW/
-            "#{@type}(#{@data_length} BYTE)"
-          else
-            @type
+        when "FLOAT"
+          buffer = @type.to_s
+          buffer << "(#{@data_precision})" unless @data_precision == 0
+          buffer
+        when "NUMBER"
+          buffer = @type.to_s
+          buffer << "(#{@data_precision}" unless @data_precision == 0
+          buffer << ",#{@data_scale}" unless @data_scale == 0
+          buffer << ")" if buffer.include?("(")
+          buffer
+        when /CHAR|RAW/
+          "#{@type}(#{@data_length} BYTE)"
+        else
+          @type
         end
       end
     end

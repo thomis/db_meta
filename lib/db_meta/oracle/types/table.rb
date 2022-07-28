@@ -130,12 +130,12 @@ module DbMeta
 
       def translate_duration
         case @duration
-          when "SYS$TRANSACTION"
-            "ON COMMIT DELETE ROWS"
-          when "SYS$SESSION"
-            "ON COMMIT PRESERVE ROWS"
-          else
-            "-- table duration definition [#{@duration}] is unknown and may need code adaptations"
+        when "SYS$TRANSACTION"
+          "ON COMMIT DELETE ROWS"
+        when "SYS$SESSION"
+          "ON COMMIT PRESERVE ROWS"
+        else
+          "-- table duration definition [#{@duration}] is unknown and may need code adaptations"
         end
       end
     end

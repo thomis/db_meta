@@ -1,3 +1,15 @@
+## [0.7.0] - 2022-07-28
+
+### Added
+- Use GitHub actions
+- Use Ruby style guide and linter
+- Use Dependabot to keep dependencies up to date
+- Use test coverage
+
+### Changed
+- Remove travis integration
+- Update depenencies
+
 ## [0.6.2] - 2021-06-29
 
 ### Changed

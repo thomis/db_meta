@@ -49,12 +49,12 @@ module DbMeta
         @for_each = "FOR EACH ROW" if /each row/i.match?(@trigger_type)
 
         case @trigger_type
-          when /before/i
-            @trigger_type = "BEFORE"
-          when /after/i
-            @trigger_type = "AFTER"
-          when /instead of/i
-            @for_each = "FOR EACH ROW"
+        when /before/i
+          @trigger_type = "BEFORE"
+        when /after/i
+          @trigger_type = "AFTER"
+        when /instead of/i
+          @for_each = "FOR EACH ROW"
         end
       end
     end

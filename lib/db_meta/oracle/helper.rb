@@ -12,9 +12,7 @@ module DbMeta
 
       def write_buffer_to_file(buffer, file)
         buffer = buffer.join("\n") if buffer.is_a?(Array)
-        File.open(file.downcase.tr(" ", "_"), "w") do |output|
-          output.write(buffer)
-        end
+        File.write(file.downcase.tr(" ", "_"), buffer)
       end
 
       def remove_folder(folder)
