@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     db_meta (0.7.0)
+      ruby-oci8 (~> 2.2)
 
 GEM
   remote: https://rubygems.org/
@@ -45,6 +46,7 @@ GEM
     rubocop-performance (1.14.3)
       rubocop (>= 1.7.0, < 2.0)
       rubocop-ast (>= 0.4.0)
+    ruby-oci8 (2.2.11)
     ruby-progressbar (1.11.0)
     simplecov (0.21.2)
       docile (~> 1.1)
