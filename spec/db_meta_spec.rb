@@ -10,7 +10,7 @@ class Example < DbMeta::Abstract
   register_type(:example)
 end
 
-describe DbMeta do
+RSpec.describe DbMeta do
   it "has a version number" do
     expect(DbMeta::VERSION).not_to be nil
   end
