@@ -5,10 +5,12 @@
 - Use Ruby style guide and linter
 - Use Dependabot to keep dependencies up to date
 - Use test coverage
+- Have more rspec tests
 
 ### Changed
 - Remove travis integration
 - Update depenencies
+- Fix rspec tests
 
 ## [0.6.2] - 2021-06-29
 
