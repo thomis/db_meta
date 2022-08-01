@@ -5,8 +5,9 @@ module DbMeta
 
       attr_reader :min_value, :max_value, :increment_by, :cycle_flag, :order_flag, :cache_size, :last_number
 
-      def fetch
-        connection = Connection.instance.get
+      def fetch(args = {})
+        connection_class = args[:connection_class] || Connection
+        connection = connection_class.instance.get
         cursor = connection.exec("select to_char(min_value), to_char(max_value), to_char(increment_by), cycle_flag, order_flag, to_char(cache_size), to_char(last_number) from user_sequences where sequence_name = '#{@name}'")
         while (row = cursor.fetch)
           @min_value = row[0].to_i

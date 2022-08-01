@@ -6,7 +6,8 @@ module DbMeta
       attr_reader :username, :password, :host
 
       def fetch(args = {})
-        connection = Connection.instance.get
+        connection_class = args[:connection_class] || Connection
+        connection = connection_class.instance.get
         cursor = connection.exec("select username, password, host from user_db_links where db_link = '#{@name}'")
         while (row = cursor.fetch)
           @username = row[0].to_s

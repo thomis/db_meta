@@ -3,6 +3,9 @@ SimpleCov.start
 
 require_relative "../lib/db_meta"
 
+require_relative "support/fake_connection"
+require_relative "support/fake_cursor"
+
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true

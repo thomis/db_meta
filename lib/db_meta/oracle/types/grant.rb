@@ -11,8 +11,10 @@ module DbMeta
       end
 
       def fetch(args = {})
+        connection_class = args[:connection_class] || Connection
         # definition is comma seperated in the name to prevent re-fetching table for every grant
         @grantee, @owner, @table_name, @grantor, @privilege, @grantable = @name.split(",")
+        @external_grant = @grantor != connection_class.instance.username.upcase
       end
 
       def extract(args = {})
@@ -33,7 +35,7 @@ module DbMeta
       end
 
       def external_grant?
-        @grantee == Connection.instance.username.upcase
+        @external_grant
       end
 
       def sort_value

@@ -31,7 +31,7 @@ module DbMeta
 
         @extract_type = :default # :default, :embedded, :merged
 
-        @system_object = @name =~ /\$/i # true if there is a '$' in the object name
+        @system_object = /\$/i.match?(@name) # true if there is a '$' in the object name
       end
 
       def fetch

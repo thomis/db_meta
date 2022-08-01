@@ -5,9 +5,10 @@ module DbMeta
 
       attr_reader :source
 
-      def fetch
+      def fetch(args = {})
         @source = ""
-        connection = Connection.instance.get
+        connection_class = args[:connection_class] || Connection
+        connection = connection_class.instance.get
         cursor = connection.exec("select text from user_source where type = 'PROCEDURE' and name = '#{@name}' order by line")
         while (row = cursor.fetch)
           @source << row[0].to_s

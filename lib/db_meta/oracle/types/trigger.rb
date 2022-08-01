@@ -11,8 +11,9 @@ module DbMeta
         @extract_type = :embedded
       end
 
-      def fetch
-        connection = Connection.instance.get
+      def fetch(args = {})
+        connection_class = args[:connection_class] || Connection
+        connection = connection_class.instance.get
         cursor = connection.exec("select trigger_type, triggering_event, table_name, referencing_names, description, trigger_body from user_triggers where trigger_name = '#{@name}'")
         while (row = cursor.fetch)
           @trigger_type = row[0].to_s

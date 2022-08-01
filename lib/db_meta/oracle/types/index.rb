@@ -13,7 +13,8 @@ module DbMeta
       end
 
       def fetch(args = {})
-        connection = Connection.instance.get
+        connection_class = args[:connection_class] || Connection
+        connection = connection_class.instance.get
         cursor = connection.exec("select index_type, table_name, uniqueness, tablespace_name from user_indexes where index_name = '#{@name}'")
         while (row = cursor.fetch)
           @index_type = row[0].to_s
