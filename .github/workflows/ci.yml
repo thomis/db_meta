@@ -10,7 +10,7 @@ on:
       - "*"
 
   schedule:
-  - cron: 0 2 * * *
+  - cron: 0 2 * * 1,3,5,6
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -28,11 +28,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: [ '3.1', '3.0', '2.7', '2.6']
+        ruby: [ '3.2', '3.1', '3.0', '2.7', '2.6']
 
     name: Ruby ${{ matrix.ruby }}
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v3
 
     - name: Install Oracle instant client
       run: |
