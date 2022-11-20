@@ -14,7 +14,7 @@ module DbMeta
           @build_mode = item["BUILD_MODE"]
           @refresh_mode = item["REFRESH_MODE"]
           @refresh_method = item["REFRESH_METHOD"]
-          @rewrite_enabled = item["REWRITE_ENABLED"] == "Y" ? "ENABLE" : "DISABLE"
+          @rewrite_enabled = (item["REWRITE_ENABLED"] == "Y") ? "ENABLE" : "DISABLE"
         end
         cursor.close
 

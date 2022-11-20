@@ -29,9 +29,9 @@ module DbMeta
         buffer << "  START WITH #{@last_number}"
         buffer << "  MAXVALUE #{@max_value}"
         buffer << "  MINVALUE #{@min_value}"
-        buffer << (@cycle_flag == "N" ? "  NOCYCLE" : "  CYCLE")
-        buffer << (@cache_size == 0 ? "  NOCACHE" : "  CACHE #{@cache_size}")
-        buffer << (@order_flag == "N" ? "  NOORDER" : "  ORDER")
+        buffer << ((@cycle_flag == "N") ? "  NOCYCLE" : "  CYCLE")
+        buffer << ((@cache_size == 0) ? "  NOCACHE" : "  CACHE #{@cache_size}")
+        buffer << ((@order_flag == "N") ? "  NOORDER" : "  ORDER")
         buffer << ";"
         buffer << nil
         buffer.join("\n")
