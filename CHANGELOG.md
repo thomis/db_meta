@@ -1,4 +1,4 @@
-## [0.7.0] - 2022-07-28
+## [0.7.0] - 2022-11-20
 
 ### Added
 - Use GitHub actions
@@ -6,6 +6,7 @@
 - Use Dependabot to keep dependencies up to date
 - Use test coverage
 - Have more rspec tests
+- Update dependencies
 
 ### Changed
 - Remove travis integration
