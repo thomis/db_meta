@@ -30,8 +30,8 @@ module DbMeta
         connection = Connection.instance.get
         cursor = connection.exec("select temporary, cache, iot_type, duration from user_tables where table_name = '#{@name}'")
         while (row = cursor.fetch)
-          @temporary = row[0].to_s.strip == "Y" ? "GLOBAL TEMPORARY" : nil
-          @cache = row[1].to_s.strip == "Y" ? "CACHE" : "NOCACHE"
+          @temporary = (row[0].to_s.strip == "Y") ? "GLOBAL TEMPORARY" : nil
+          @cache = (row[1].to_s.strip == "Y") ? "CACHE" : "NOCACHE"
           @iot_type = row[2].to_s
           @duration = row[3].to_s
         end
