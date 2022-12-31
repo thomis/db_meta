@@ -1,3 +1,8 @@
+## [0.7.1] - 2022-12-31
+
+### Changed
+- Update depenencies
+
 ## [0.7.0] - 2022-11-20
 
 ### Added
@@ -6,7 +11,6 @@
 - Use Dependabot to keep dependencies up to date
 - Use test coverage
 - Have more rspec tests
-- Update dependencies
 
 ### Changed
 - Remove travis integration
