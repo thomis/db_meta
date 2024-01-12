@@ -50,9 +50,11 @@ meta.extract
 
 Currently supported and tested ruby versions are:
 
+- 3.3
+- 3.2
 - 3.1
-- 3.0
-- 2.7
+- 3.0 (EOL 31 Mar 2024)
+- 2.7 (EOL 31 Mar 2023)
 - 2.6 (EOL 31 Mar 2022)
 
 ## Planned Features
