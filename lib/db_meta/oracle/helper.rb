@@ -26,7 +26,7 @@ module DbMeta
 
       def pluralize(n, singular, plural = nil)
         return singular if n == 1
-        (plural || (singular + "s"))
+        plural || (singular + "s")
       end
     end
   end
