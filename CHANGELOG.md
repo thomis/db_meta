@@ -1,3 +1,8 @@
+## [0.10.0] - 2024-03-17
+
+### Changed
+- Update depenencies
+
 ## [0.9.0] - 2024-02-21
 
 ### Changed
