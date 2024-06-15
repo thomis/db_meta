@@ -6,7 +6,7 @@ module DbMeta
       attr_reader :columns, :temporary, :cache, :iot_type, :duration
 
       def initialize(args = {})
-        super(args)
+        super
 
         @comment = nil # table level comment
 

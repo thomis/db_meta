@@ -6,7 +6,7 @@ module DbMeta
       attr_reader :table_owner, :table_name, :db_link
 
       def initialize(args = {})
-        super(args)
+        super
 
         @extract_type = :merged
       end

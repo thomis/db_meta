@@ -18,7 +18,7 @@ module DbMeta
       register_type(:oracle)
 
       def initialize(args = {})
-        super(args)
+        super
 
         Connection.instance.set(@username, @password, @instance, @worker)
 

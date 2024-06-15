@@ -6,7 +6,7 @@ module DbMeta
       attr_accessor :trigger_type, :trigger_event, :for_each, :table_name, :referencing_names, :description, :tigger_body
 
       def initialize(args = {})
-        super(args)
+        super
 
         @extract_type = :embedded
       end

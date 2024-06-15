@@ -4,7 +4,7 @@ module DbMeta
       register_type("VIEW")
 
       def initialize(args = {})
-        super(args)
+        super
 
         @comment = nil # view level comment
       end

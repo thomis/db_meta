@@ -6,7 +6,7 @@ module DbMeta
       attr_reader :index_type, :table_name, :uniqueness, :tablespace
 
       def initialize(args = {})
-        super(args)
+        super
 
         @extract_type = :embedded
         @columns = []

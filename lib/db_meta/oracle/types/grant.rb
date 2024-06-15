@@ -6,7 +6,7 @@ module DbMeta
       attr_reader :grantee, :owner, :table_name, :grantor, :privilege, :grantable
 
       def initialize(args = {})
-        super(args)
+        super
         @extract_type = :merged
       end
 

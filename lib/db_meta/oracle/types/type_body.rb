@@ -4,7 +4,7 @@ module DbMeta
       register_type("TYPE BODY")
 
       def initialize(args = {})
-        super(args)
+        super
         @extract_type = :embedded
       end
     end

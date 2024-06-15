@@ -6,7 +6,7 @@ module DbMeta
       attr_reader :constraint_type, :table_name, :search_condition, :referential_constraint, :delete_rule, :columns
 
       def initialize(args = {})
-        super(args)
+        super
 
         @extract_type = :embedded
         @columns = []
