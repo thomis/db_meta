@@ -15,7 +15,7 @@ module DbMeta
         connection = Connection.instance.get
         cursor = connection.exec("select column_name, data_type, data_length, data_precision, data_scale, nullable, data_default from user_tab_columns where table_name = '#{args[:object_name]}' order by column_id")
         while (row = cursor.fetch)
-          column = Column.new(row)
+          column = Column.new
           column.name = row[0].to_s
           column.type = row[1].to_s
           column.data_length = row[2].to_i

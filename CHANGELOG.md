@@ -1,3 +1,8 @@
+## [0.12.0] - 2024-06-15
+
+### Changed
+- Fix Column.new to pass no arguments
+
 ## [0.11.0] - 2024-06-15
 
 ### Changed
