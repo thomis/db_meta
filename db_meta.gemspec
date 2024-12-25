@@ -25,4 +25,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "simplecov", "~> 0.21"
 
   spec.add_dependency "ruby-oci8", "~> 2.2"
+  spec.add_dependency "logger", "~> 1.6"
 end
