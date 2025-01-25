@@ -44,7 +44,7 @@ jobs:
         unzip -o instantclient_sdk.zip
         unzip -o instantclient_sqlplus.zip
 
-    - name: libaio.so.1 symbolic link
+    - name: libaio.so.1 fix with symbolic link
       run: |
         TARGET="/lib/x86_64-linux-gnu/libaio.so.1"
         SOURCE="/lib/x86_64-linux-gnu/libaio.so.1t64"
@@ -52,9 +52,6 @@ jobs:
         # Check if the symbolic link already exists
         if [ ! -e "$TARGET" ]; then
             sudo ln -s "$SOURCE" "$TARGET"
-            echo "Symbolic link created: $TARGET -> $SOURCE"
-        else
-            echo "Symbolic link already exists: $TARGET"
         fi
 
     - name: Set up Ruby
