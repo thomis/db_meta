@@ -20,7 +20,7 @@ module DbMeta
       @include = args[:include]
 
       @objects = []
-      @invalid_objects = Hash.new([])
+      @invalid_objects = Hash.new { |h, key| h[key] = [] }
 
       @base_folder = args[:base_folder] || File.expand_path(File.join(Dir.pwd, "/#{@username}@#{@instance}"))
 

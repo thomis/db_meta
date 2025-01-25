@@ -43,6 +43,7 @@ jobs:
         unzip -o instantclient.zip
         unzip -o instantclient_sdk.zip
         unzip -o instantclient_sqlplus.zip
+        ls -l /lib/x86_64-linux-gnu/libaio*
 
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
