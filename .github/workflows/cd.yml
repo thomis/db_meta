@@ -22,8 +22,10 @@ jobs:
         mkdir -p /opt && cd /opt
         curl https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-basiclite-linux.x64-23.7.0.25.01.zip --output instantclient.zip
         curl https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-sdk-linux.x64-23.7.0.25.01.zip --output instantclient_sdk.zip
+        curl https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-sqlplus-linux.x64-23.7.0.25.01.zip --output instantclient_sqlplus.zip
         unzip -o instantclient.zip
         unzip -o instantclient_sdk.zip
+        unzip -o instantclient_sqlplus.zip
 
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
