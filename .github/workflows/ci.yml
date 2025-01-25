@@ -51,7 +51,7 @@ jobs:
 
         # Check if the symbolic link already exists
         if [ ! -e "$TARGET" ]; then
-            ln -s "$SOURCE" "$TARGET"
+            sudo ln -s "$SOURCE" "$TARGET"
             echo "Symbolic link created: $TARGET -> $SOURCE"
         else
             echo "Symbolic link already exists: $TARGET"
