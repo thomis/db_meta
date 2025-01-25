@@ -55,7 +55,7 @@ Currently supported and tested ruby versions are:
 - 3.2
 - 3.1
 
-Ruby version not tested anymore:
+Ruby versions not tested anymore:
 
 - 3.0 (EOL 31 Mar 2024)
 - 2.7 (EOL 31 Mar 2023)
