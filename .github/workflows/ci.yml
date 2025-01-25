@@ -20,9 +20,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-      ORACLE_HOME: /opt/instantclient_21_12
-      LD_LIBRARY_PATH: /opt/instantclient_21_12
-      OCI_DIR: /opt/instantclient_21_12
+      ORACLE_HOME: /opt/instantclient_23_7
+      LD_LIBRARY_PATH: /opt/instantclient_23_7
+      OCI_DIR: /opt/instantclient_23_7
       NLS_LANG: AMERICAN_AMERICA.AL32UTF8
 
     strategy:
