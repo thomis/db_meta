@@ -62,16 +62,6 @@ jobs:
         bundler-cache: true
         cache-version: 3
 
-    - name: Code Climate setup test reporter
-      run: |
-        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-        chmod +x ./cc-test-reporter
-        ./cc-test-reporter before-build
-
     - name: Run default task
       run: |
         bundle exec rake
-
-    - name: Code Climate publish test coverage
-      run: |
-        ./cc-test-reporter after-build
