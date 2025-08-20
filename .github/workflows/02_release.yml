@@ -1,4 +1,4 @@
-name: cd
+name: 02 - Release
 
 on:
   workflow_dispatch:

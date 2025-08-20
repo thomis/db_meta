@@ -1,5 +1,6 @@
 [![Gem Version](https://badge.fury.io/rb/db_meta.svg)](https://badge.fury.io/rb/db_meta)
-[![ci](https://github.com/thomis/db_meta/actions/workflows/ci.yml/badge.svg)](https://github.com/thomis/db_meta/actions/workflows/ci.yml)
+[![01 - Test](https://github.com/thomis/db_meta/actions/workflows/01_test.yml/badge.svg)](https://github.com/thomis/db_meta/actions/workflows/01_test.yml)
+[![02 - Release](https://github.com/thomis/db_meta/actions/workflows/02_release.yml/badge.svg)](https://github.com/thomis/db_meta/actions/workflows/02_release.yml)
 
 # Welcome to db_meta
 Database meta and core data extraction.
@@ -63,7 +64,44 @@ Ruby versions not tested anymore:
 - Storage and tablespace clause
 
 ## Contributing
-...
+
+We welcome contributions to db_meta! Here's how you can help:
+
+1. **Fork the repository** - Create your own fork of the code
+2. **Create a feature branch** - Make your changes in a new git branch:
+   ```
+   git checkout -b my-new-feature
+   ```
+3. **Make your changes** - Write your code and tests
+4. **Run the tests** - Ensure all tests pass:
+   ```
+   bundle exec rake
+   ```
+5. **Commit your changes** - Write clear and meaningful commit messages:
+   ```
+   git commit -am 'Add some feature'
+   ```
+6. **Push to your branch** - Push your changes to GitHub:
+   ```
+   git push origin my-new-feature
+   ```
+7. **Create a Pull Request** - Open a PR from your fork to the main repository
+
+### Guidelines
+
+- Write tests for any new functionality
+- Follow the existing code style and conventions
+- Update documentation as needed
+- Keep commits focused and atomic
+- Write clear commit messages
+
+### Reporting Issues
+
+Found a bug or have a feature request? Please open an issue on GitHub with:
+- A clear title and description
+- Steps to reproduce (for bugs)
+- Expected vs actual behavior
+- Ruby version and environment details
 
 ## License
 db_meta is released under [Apache License, Version 2.0](https://opensource.org/licenses/Apache-2.0)
