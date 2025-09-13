@@ -43,7 +43,7 @@ module DbMeta
       end
 
       def extract(args = {})
-        "CREATE#{(@uniqueness == "UNIQUE") ? " UNIQUE" : nil} INDEX #{@name} ON #{@table_name}(#{@columns.join(", ")});"
+        "CREATE#{" UNIQUE" if @uniqueness == "UNIQUE"} INDEX #{@name} ON #{@table_name}(#{@columns.join(", ")});"
       end
     end
   end

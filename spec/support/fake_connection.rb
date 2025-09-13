@@ -1,5 +1,6 @@
 class FakeConnection
   include Singleton
+
   def get
     self
   end
