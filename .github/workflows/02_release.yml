@@ -22,8 +22,7 @@ jobs:
       with:
         ruby-version: '3.4'
         bundler: latest
-        bundler-cache: true
-        cache-version: 1
+        bundler-cache: false
 
     - name: Build gem
       run: gem build *.gemspec
