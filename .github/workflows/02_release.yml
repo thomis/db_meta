@@ -12,17 +12,43 @@ jobs:
     permissions:
       id-token: write
       contents: write
+    env:
+      ORACLE_HOME: /opt/instantclient_23_7
+      LD_LIBRARY_PATH: /opt/instantclient_23_7
+      OCI_DIR: /opt/instantclient_23_7
+      NLS_LANG: AMERICAN_AMERICA.AL32UTF8
 
     steps:
     - name: Checkout current code
       uses: actions/checkout@v5
+
+    - name: Install Oracle instant client
+      run: |
+        mkdir -p /opt && cd /opt
+        curl https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-basiclite-linux.x64-23.7.0.25.01.zip --output instantclient.zip
+        curl https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-sdk-linux.x64-23.7.0.25.01.zip --output instantclient_sdk.zip
+        curl https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-sqlplus-linux.x64-23.7.0.25.01.zip --output instantclient_sqlplus.zip
+        unzip -o instantclient.zip
+        unzip -o instantclient_sdk.zip
+        unzip -o instantclient_sqlplus.zip
+
+    - name: libaio.so.1 fix with symbolic link
+      run: |
+        TARGET="/lib/x86_64-linux-gnu/libaio.so.1"
+        SOURCE="/lib/x86_64-linux-gnu/libaio.so.1t64"
+
+        # Check if the symbolic link already exists
+        if [ ! -e "$TARGET" ]; then
+            sudo ln -s "$SOURCE" "$TARGET"
+        fi
 
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.4'
         bundler: latest
-        bundler-cache: false
+        bundler-cache: true
+        cache-version: 1
 
     - name: Build gem
       run: gem build *.gemspec
