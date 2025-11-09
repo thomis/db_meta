@@ -1,3 +1,11 @@
+## [0.13.1] - 2025-11-09
+
+### Added
+- Trusted Publisher
+
+### Changed
+- Updated development dependencies
+
 ## [0.13.0] - 2024-12-25
 
 ### Changed
