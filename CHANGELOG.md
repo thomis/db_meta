@@ -1,3 +1,8 @@
+## [0.14.2] - 2026-04-28
+
+### Changed
+- Materialized views with a refresh interval are extracted as `START WITH SYSDATE NEXT <interval>` by default, instead of using the live `USER_REFRESH.NEXT_DATE`. The next_date advances on every refresh cycle and made schema diffs noisy across instances. Pass `preserve_mview_schedule: true` to `extract` to keep the original `TO_DATE(...)` form when the exact next-refresh moment matters.
+
 ## [0.14.1] - 2026-04-28
 
 ### Changed

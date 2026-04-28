@@ -40,7 +40,10 @@ module DbMeta
         buffer << "CREATE MATERIALIZED VIEW #{@name}(#{@columns.map { |c| c.name }.join(", ")})"
         buffer << "BUILD #{@build_mode}"
         buffer << "REFRESH #{@refresh_method} ON #{@refresh_mode}"
-        buffer << "START WITH TO_DATE('#{@next_date}') NEXT #{@interval}" if @interval
+        if @interval
+          start_clause = args[:preserve_mview_schedule] ? "TO_DATE('#{@next_date}')" : "SYSDATE"
+          buffer << "START WITH #{start_clause} NEXT #{@interval}"
+        end
         buffer << "#{@rewrite_enabled} QUERY REWRITE"
         buffer << "AS"
         buffer << @query
