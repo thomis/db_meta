@@ -41,7 +41,11 @@ module DbMeta
         buffer << "BUILD #{@build_mode}"
         buffer << "REFRESH #{@refresh_method} ON #{@refresh_mode}"
         if @interval
-          start_clause = args[:preserve_mview_schedule] ? "TO_DATE('#{@next_date}')" : "SYSDATE"
+          # Reusing @interval as the start expression means the first refresh
+          # aligns with the schedule cadence (e.g. an MV that refreshes at
+          # midnight daily will first refresh at the next midnight, regardless
+          # of when this script runs).
+          start_clause = args[:preserve_mview_schedule] ? "TO_DATE('#{@next_date}')" : @interval
           buffer << "START WITH #{start_clause} NEXT #{@interval}"
         end
         buffer << "#{@rewrite_enabled} QUERY REWRITE"

@@ -1,3 +1,8 @@
+## [0.14.3] - 2026-04-28
+
+### Changed
+- Materialized view extracts now reuse the `INTERVAL` expression as the `START WITH` clause (e.g. `START WITH TRUNC(SYSDATE+1) NEXT TRUNC(SYSDATE+1)`) instead of emitting `START WITH SYSDATE`. Using `SYSDATE` caused the first refresh to fire at script-execution time, breaking cadence-aligned schedules (a midnight-daily MV would refresh at install time, not midnight, until the next cycle). Reusing the interval makes the first refresh align with the schedule regardless of when the script runs. `preserve_mview_schedule: true` still keeps the live `TO_DATE(...)` form.
+
 ## [0.14.2] - 2026-04-28
 
 ### Changed
