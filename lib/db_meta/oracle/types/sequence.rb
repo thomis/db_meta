@@ -19,8 +19,6 @@ module DbMeta
           @last_number = row[6].to_i
         end
         cursor.close
-      ensure
-        connection.logoff
       end
 
       def extract(args = {})

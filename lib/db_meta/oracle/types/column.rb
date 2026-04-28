@@ -36,8 +36,6 @@ module DbMeta
         cursor.close
 
         columns
-      rescue
-        connection.loggoff
       end
 
       private

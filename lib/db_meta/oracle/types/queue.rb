@@ -23,8 +23,6 @@ module DbMeta
           @compatible = row["COMPATIBLE"]
         end
         cursor.close
-      ensure
-        connection.logoff
       end
 
       def extract(args = {})

@@ -44,8 +44,6 @@ module DbMeta
         buffer << nil
 
         buffer.join("\n")
-      ensure
-        connection.logoff
       end
 
       def ddl_drop

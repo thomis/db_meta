@@ -26,6 +26,9 @@ module DbMeta
       end
 
       def fetch(args = {})
+        # bulk-load metadata that would otherwise drive N round-trips per object
+        Constraint.preload
+
         # fetch details in parallel
         # number of threads = physical connections / 2 to prevent application locking
         worker = (1..Connection.instance.worker / 2).map {
@@ -35,6 +38,8 @@ module DbMeta
               object.fetch
             end
           rescue ThreadError
+          ensure
+            Connection.instance.release_thread_connection
           end
         }
         worker.map(&:join) # wait until all are done
@@ -215,8 +220,6 @@ module DbMeta
         Log.info("Objects: #{items.size}, Object Types: #{types.uniq.size}")
 
         objects
-      ensure
-        connection&.logoff # closes logical connection
       end
     end
   end

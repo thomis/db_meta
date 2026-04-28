@@ -38,8 +38,6 @@ module DbMeta
           @columns[idx] = row[0] # replace sys_... entry
         end
         cursor.close
-      ensure
-        connection.logoff
       end
 
       def extract(args = {})

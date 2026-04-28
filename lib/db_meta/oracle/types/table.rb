@@ -36,8 +36,6 @@ module DbMeta
           @duration = row[3].to_s
         end
         cursor.close
-      rescue
-        connection.logoff
       end
 
       def extract(args = {})
@@ -54,7 +52,7 @@ module DbMeta
         if @iot_type == "IOT"
           constraint = @constraints.find { |c| c.constraint_type == "PRIMARY KEY" }
           buffer[-1] += ","
-          buffer << "  CONSTRAINT #{constraint.name}"
+          buffer << "  CONSTRAINT #{constraint.name}" unless Constraint.system_generated?(constraint.name)
           buffer << "  PRIMARY KEY (#{constraint.columns.join(", ")})"
           buffer << "  ENABLE VALIDATE"
         end

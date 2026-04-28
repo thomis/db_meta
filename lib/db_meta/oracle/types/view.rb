@@ -15,13 +15,11 @@ module DbMeta
 
         @source = ""
         connection = Connection.instance.get
-        cursor = Connection.instance.get.exec("select text from user_views where view_name = '#{@name}'")
+        cursor = connection.exec("select text from user_views where view_name = '#{@name}'")
         while (row = cursor.fetch)
           @source << row[0].to_s
         end
         cursor.close
-      ensure
-        connection.logoff
       end
 
       def extract(args = {})
@@ -47,7 +45,7 @@ module DbMeta
 
         # view column comments
         @columns.each do |column|
-          next if column.comment.size == 0
+          next if column.comment.nil? || column.comment.size == 0
           buffer << "COMMENT ON COLUMN #{@name}.#{column.name} IS '#{column.comment.gsub("'", "''")}';"
         end
 

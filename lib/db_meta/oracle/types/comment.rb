@@ -9,8 +9,6 @@ module DbMeta
         while (row = cursor.fetch)
           @text = row[0]
         end
-      ensure
-        connection.logoff
       end
     end
   end

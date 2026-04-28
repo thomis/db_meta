@@ -14,8 +14,6 @@ module DbMeta
           @source << row[0].to_s
         end
         cursor.close
-      ensure
-        connection.logoff
       end
 
       def extract(args = {})

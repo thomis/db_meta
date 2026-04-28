@@ -5,6 +5,72 @@ module DbMeta
 
       attr_reader :constraint_type, :table_name, :search_condition, :referential_constraint, :delete_rule, :columns
 
+      @@cache = {}
+      @@cache_mutex = Mutex.new
+
+      def self.preload(args = {})
+        connection_class = args[:connection_class] || Connection
+        connection = connection_class.instance.get
+
+        meta = {}
+        cursor = connection.exec(
+          "select constraint_name, constraint_type, table_name, search_condition, r_constraint_name, delete_rule " \
+          "from user_constraints"
+        )
+        cursor.fetch_hash do |row|
+          name = row["CONSTRAINT_NAME"]
+          type = translate_constraint_type(row["CONSTRAINT_TYPE"])
+          search_condition = row["SEARCH_CONDITION"]
+
+          # Skip Oracle-generated NOT NULL CHECK constraints. They are already
+          # represented by the column's NOT NULL clause in the table DDL, so
+          # emitting them again is redundant noise that breaks schema diffs.
+          next if redundant_not_null?(name, type, search_condition)
+
+          meta[name] = {
+            constraint_type: type,
+            table_name: row["TABLE_NAME"],
+            search_condition: search_condition,
+            r_constraint_name: row["R_CONSTRAINT_NAME"],
+            delete_rule: row["DELETE_RULE"],
+            columns: []
+          }
+        end
+        cursor.close
+
+        cursor = connection.exec(
+          "select constraint_name, column_name, position " \
+          "from user_cons_columns order by constraint_name, position"
+        )
+        cursor.fetch_hash do |row|
+          entry = meta[row["CONSTRAINT_NAME"]]
+          next unless entry
+          entry[:columns] << row["COLUMN_NAME"]
+        end
+        cursor.close
+
+        @@cache_mutex.synchronize { @@cache = meta }
+      end
+
+      def self.system_generated?(name)
+        name.to_s.start_with?("SYS_")
+      end
+
+      def self.redundant_not_null?(name, type, search_condition)
+        return false unless system_generated?(name) && type == "CHECK"
+        return false if search_condition.nil?
+        # Match patterns like: "COL_NAME" IS NOT NULL  or  COL_NAME IS NOT NULL
+        !!search_condition.match?(/\A\s*"?[A-Z0-9_$#]+"?\s+IS\s+NOT\s+NULL\s*\z/i)
+      end
+
+      def self.cache
+        @@cache
+      end
+
+      def self.reset_cache
+        @@cache_mutex.synchronize { @@cache = {} }
+      end
+
       def initialize(args = {})
         super
 
@@ -13,37 +79,29 @@ module DbMeta
       end
 
       def fetch(args = {})
-        connection = Connection.instance.get
-        cursor = connection.exec("select * from user_constraints where constraint_name = '#{@name}'")
-        cursor.fetch_hash do |item|
-          @constraint_type = translate_constraint_type(item["CONSTRAINT_TYPE"])
-          @extract_type = :merged if @constraint_type == "FOREIGN KEY"
-          @table_name = item["TABLE_NAME"]
-          @search_condition = item["SEARCH_CONDITION"]
-          @delete_rule = item["DELETE_RULE"]
+        entry = @@cache[@name]
+        return unless entry
 
-          if @constraint_type == "FOREIGN KEY"
-            constraint = Constraint.new("OBJECT_TYPE" => "CONSTRAINT", "OBJECT_NAME" => item["R_CONSTRAINT_NAME"])
-            constraint.fetch
-            @referential_constraint = constraint
-          end
-        end
-        cursor.close
+        @constraint_type = entry[:constraint_type]
+        @table_name = entry[:table_name]
+        @search_condition = entry[:search_condition]
+        @delete_rule = entry[:delete_rule]
+        @columns = entry[:columns].dup
+        @extract_type = :merged if @constraint_type == "FOREIGN KEY"
 
-        # get affected columns
-        cursor = connection.exec("select * from user_cons_columns where constraint_name = '#{@name}' order by position")
-        cursor.fetch_hash do |item|
-          @columns << item["COLUMN_NAME"]
+        if @constraint_type == "FOREIGN KEY" && entry[:r_constraint_name]
+          @referential_constraint = Constraint.new(
+            "OBJECT_TYPE" => "CONSTRAINT",
+            "OBJECT_NAME" => entry[:r_constraint_name]
+          )
+          @referential_constraint.fetch
         end
-        cursor.close
-      ensure
-        connection.logoff
       end
 
       def extract(args = {})
         buffer = []
         buffer << "ALTER TABLE #{@table_name} ADD ("
-        buffer << "  CONSTRAINT #{@name}"
+        buffer << "  CONSTRAINT #{@name}" unless Constraint.system_generated?(@name)
 
         case @constraint_type
         when "CHECK"
@@ -69,9 +127,7 @@ module DbMeta
         ["PRIMARY KEY", "FOREIGN KEY", "UNIQUE", "CHECK"].index(type)
       end
 
-      private
-
-      def translate_constraint_type(type)
+      def self.translate_constraint_type(type)
         case type
         when "P"
           "PRIMARY KEY"

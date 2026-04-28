@@ -2,12 +2,15 @@
 [![01 - Test](https://github.com/thomis/db_meta/actions/workflows/01_test.yml/badge.svg)](https://github.com/thomis/db_meta/actions/workflows/01_test.yml)
 [![02 - Release](https://github.com/thomis/db_meta/actions/workflows/02_release.yml/badge.svg)](https://github.com/thomis/db_meta/actions/workflows/02_release.yml)
 
-# Welcome to db_meta
-Database meta and core data extraction.
+# db_meta
 
-## Is it production ready?
+Extract Oracle schema metadata and core data as SQL DDL files.
 
-Well, I would not say, but I am using it already for my database development work where the gem covers my needs. Be careful and check details. Please create an issue when you think that someting is wrong or missing.
+`db_meta` connects to an Oracle schema and writes out DDL for every object (tables, views, indexes, constraints, packages, sequences, synonyms, grants, …), plus optional `INSERT` scripts for reference/lookup data. The output is a folder of `.sql` files organized by object type — suitable for checking into version control, diffing across environments, or seeding a fresh schema.
+
+## Status
+
+Used in day-to-day database development by the author. It covers the most common Oracle object types but is not exhaustive — exotic features (advanced storage clauses, partitioning details, etc.) may be missing or simplified. Spot-check the output before relying on it for a migration, and please open an issue if you hit something that's wrong or missing.
 
 ## Installation
 via Gemfile
@@ -30,6 +33,13 @@ meta.fetch
 meta.extract
 ```
 
+## Output conventions
+
+A few decisions worth knowing about, especially if you compare extracts across instances:
+
+- **Auto-generated `SYS_*` constraint names are stripped from the output.** Oracle invents names like `SYS_C0012345` for unnamed constraints, and those names differ between instances — making schema diffs noisy. Constraints with a `SYS_*` name are emitted without an explicit `CONSTRAINT <name>` clause; on import, Oracle just generates a fresh name. User-given constraint names are preserved as-is.
+- **Redundant `NOT NULL` CHECK constraints are omitted.** Oracle exposes column-level `NOT NULL` both as a column attribute and as a `SYS_*` CHECK constraint with a body of `"COL" IS NOT NULL`. The column-level form is already in the table DDL, so the duplicate CHECK is filtered out.
+
 ## Supported Databases
 - Oracle
 
@@ -49,12 +59,13 @@ meta.extract
 
 Currently supported and tested ruby versions are:
 
+- 4.0 (EOL 31 Mar 2029)
 - 3.4 (EOL 31 Mar 2028)
 - 3.3 (EOL 31 Mar 2027)
-- 3.2 (EOL 31 Mar 2026)
 
 Ruby versions not tested anymore:
 
+- 3.2 (EOL 31 Mar 2026)
 - 3.1 (EOL 31 Mar 2025)
 - 3.0 (EOL 31 Mar 2024)
 - 2.7 (EOL 31 Mar 2023)
@@ -62,6 +73,16 @@ Ruby versions not tested anymore:
 
 ## Planned Features
 - Storage and tablespace clause
+
+## Troubleshooting (macOS / Apple Silicon)
+
+If `OCI8.new` hangs for ~10s, prints "byte leak" gibberish, or crashes with `ldap_first_entry: Assertion …`, the issue is almost always that the Instant Client is trying to use LDAP/OID for database name resolution. The fix is the same in both cases: tell Oracle to use a local `tnsnames.ora` instead of LDAP. Create `~/opt/oracle/admin/tnsnames.ora` with your DB alias and `~/opt/oracle/admin/sqlnet.ora` containing `NAMES.DIRECTORY_PATH=(TNSNAMES, EZCONNECT)`, then `export TNS_ADMIN=$HOME/opt/oracle/admin`.
+
+For background and the `libclntsh` ↔ OpenLDAP symbol-clash variant (caused by Oracle's bundled LDAP client and Homebrew's OpenLDAP both loading into the same Ruby process), see:
+
+- [ruby-oci8 #32 — OCI8 hangs when switching to LDAP](https://github.com/kubo/ruby-oci8/issues/32)
+- [ruby-oci8 #41 — Assertion failure using LDAP](https://github.com/kubo/ruby-oci8/issues/41)
+- [Oracle Instant Client FAQ](https://www.oracle.com/database/technologies/instant-client/faqs.html)
 
 ## Publishing
 

@@ -27,8 +27,6 @@ module DbMeta
         parse_trigger_type
 
         cursor.close
-      ensure
-        connection.logoff
       end
 
       def extract(args = {})

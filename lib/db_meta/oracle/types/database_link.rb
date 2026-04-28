@@ -15,8 +15,6 @@ module DbMeta
           @host = row[2].to_s
         end
         cursor.close
-      ensure
-        connection.logoff
       end
 
       def extract(args = {})

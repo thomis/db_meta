@@ -1,3 +1,23 @@
+## [0.14.0] - 2026-04-28
+
+### Changed
+- Reuse a single OCI8 logical connection per worker thread for the duration of the fetch instead of acquiring/logging off on every type fetch. Drastically reduces session attach/detach traffic against the connection pool, which avoids the per-attach overhead (and the 23c Instant Client byte-leak symptom) on long extracts.
+- Batch-load constraint metadata via two bulk queries against `USER_CONSTRAINTS` and `USER_CONS_COLUMNS` once before the parallel object fetch, and have `Constraint#fetch` read from an in-memory cache. Removes 2-3 round-trips per constraint.
+- Constraints with Oracle-generated `SYS_*` names are now emitted without an explicit `CONSTRAINT <name>` clause, so DDL diffs across instances aren't dominated by name churn. User-given names are preserved.
+- Redundant `SYS_*` NOT NULL CHECK constraints (whose condition is just `"COL" IS NOT NULL`) are filtered out — the column-level NOT NULL in the table DDL already covers them.
+- Fixed `View#fetch` to reuse the acquired connection (previously called `Connection.instance.get` twice, leaking a logical connection per view).
+- Fixed `View#extract` crash when a view has columns without comments (`column.comment.size` on nil).
+- Fixed `Table#fetch` ensure logic (was `rescue` instead of `ensure`).
+- Fixed `Column.all` typo (`loggoff` → cleanup no longer needed).
+
+### Added
+- README troubleshooting section for macOS / Apple Silicon: short tip covering both the 23c OID lookup hang and the `libclntsh` ↔ OpenLDAP symbol-clash, with the shared `tnsnames.ora` + `NAMES.DIRECTORY_PATH=(TNSNAMES, EZCONNECT)` fix and links to the relevant ruby-oci8 / Oracle docs.
+- Significantly expanded test coverage (49 → 125 examples; line coverage 58.94% → ~86%).
+- Added Ruby 4.0 to the supported/tested matrix.
+
+### Removed
+- Dropped Ruby 3.2 from the actively tested matrix (EOL 31 Mar 2026).
+
 ## [0.13.1] - 2025-11-09
 
 ### Added

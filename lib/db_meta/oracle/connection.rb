@@ -5,6 +5,8 @@ module DbMeta
     class Connection
       include Singleton
 
+      THREAD_KEY = :db_meta_oracle_connection
+
       attr_accessor :username, :password, :database_instance
       attr_reader :pool
       attr_reader :worker
@@ -23,11 +25,22 @@ module DbMeta
           Log.info("Connected to #{@username}@#{@database_instance}")
         end
 
-        # create and return logical connection. It creates physical connection as needed.
-        ::OCI8.new(@username, @password, @pool)
+        # one logical connection per thread - reused across all fetches in that thread
+        Thread.current[THREAD_KEY] ||= ::OCI8.new(@username, @password, @pool)
+      end
+
+      def release_thread_connection
+        connection = Thread.current[THREAD_KEY]
+        return unless connection
+        connection.logoff
+      rescue
+        # connection may already be closed
+      ensure
+        Thread.current[THREAD_KEY] = nil
       end
 
       def disconnect
+        release_thread_connection
         return unless @pool
         @pool.destroy
         Log.info("Logged off from #{@username}@#{@database_instance}")

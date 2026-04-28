@@ -33,8 +33,6 @@ module DbMeta
           @comment = item["COMMENTS"]
         end
         cursor.close
-      ensure
-        connection.logoff
       end
 
       def extract(args = {})
