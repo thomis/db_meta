@@ -13,6 +13,19 @@ RSpec.describe DbMeta::Oracle::Column do
       column.data_default = ""
       expect(column.extract).to include("NUMBER(10,2)")
       expect(column.extract).to include("AMOUNT")
+      expect(column.extract).not_to include("NOT NULL")
+    end
+
+    it "appends NOT NULL when the column is non-nullable" do
+      column = described_class.new
+      column.name = "ID"
+      column.type = "NUMBER"
+      column.data_length = 0
+      column.data_precision = 10
+      column.data_scale = 0
+      column.nullable = "N"
+      column.data_default = ""
+      expect(column.extract).to include("NOT NULL")
     end
 
     it "renders a FLOAT with precision" do

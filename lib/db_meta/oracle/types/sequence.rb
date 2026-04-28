@@ -22,9 +22,12 @@ module DbMeta
       end
 
       def extract(args = {})
+        start_value = args[:preserve_sequence_position] ? @last_number : @min_value
+
         buffer = [block(@name)]
         buffer << "CREATE SEQUENCE #{@name}"
-        buffer << "  START WITH #{@last_number}"
+        buffer << "  START WITH #{start_value}"
+        buffer << "  INCREMENT BY #{@increment_by}"
         buffer << "  MAXVALUE #{@max_value}"
         buffer << "  MINVALUE #{@min_value}"
         buffer << ((@cycle_flag == "N") ? "  NOCYCLE" : "  CYCLE")

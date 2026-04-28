@@ -39,6 +39,11 @@ A few decisions worth knowing about, especially if you compare extracts across i
 
 - **Auto-generated `SYS_*` constraint names are stripped from the output.** Oracle invents names like `SYS_C0012345` for unnamed constraints, and those names differ between instances — making schema diffs noisy. Constraints with a `SYS_*` name are emitted without an explicit `CONSTRAINT <name>` clause; on import, Oracle just generates a fresh name. User-given constraint names are preserved as-is.
 - **Redundant `NOT NULL` CHECK constraints are omitted.** Oracle exposes column-level `NOT NULL` both as a column attribute and as a `SYS_*` CHECK constraint with a body of `"COL" IS NOT NULL`. The column-level form is already in the table DDL, so the duplicate CHECK is filtered out.
+- **Sequences start from their `MINVALUE`, not from the live `LAST_NUMBER`.** Oracle's `LAST_NUMBER` advances every time someone calls `NEXTVAL`, so emitting it would make extracts diverge between any two instances of the same schema. The default output therefore starts each sequence at its baseline (typically 1), so a fresh schema build is reproducible and diffs stay clean. If you're seeding a new schema alongside imported data and need sequences to continue past existing PK values, pass `preserve_sequence_position: true` to `extract`:
+
+  ```ruby
+  meta.extract(preserve_sequence_position: true)
+  ```
 
 ## Supported Databases
 - Oracle

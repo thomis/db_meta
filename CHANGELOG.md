@@ -1,3 +1,12 @@
+## [0.14.1] - 2026-04-28
+
+### Changed
+- Sequences now extract with `START WITH <MINVALUE>` by default (previously `START WITH <LAST_NUMBER>`), so extracts are reproducible and comparable across instances of the same schema. Pass `preserve_sequence_position: true` to `extract` to keep the original live-position behavior.
+- `INCREMENT BY` is now emitted for sequences (previously fetched but never written, so non-default increments produced incorrect DDL).
+
+### Fixed
+- `Column#extract` now emits an explicit `NOT NULL` for non-nullable columns. Without this, 0.14.0 produced table DDL without any NOT NULL clauses because the previously-relied-on `SYS_*` NOT NULL CHECK constraints are now filtered out as redundant noise.
+
 ## [0.14.0] - 2026-04-28
 
 ### Changed

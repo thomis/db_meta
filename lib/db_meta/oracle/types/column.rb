@@ -7,6 +7,7 @@ module DbMeta
         buffer = ("%-30s" % @name).to_s
         buffer << " #{convert_type}"
         buffer << " DEFAULT #{@data_default.strip}" if @data_default.size > 0
+        buffer << " NOT NULL" if @nullable == "N"
         buffer
       end
 
